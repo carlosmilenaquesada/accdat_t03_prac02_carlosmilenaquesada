@@ -21,10 +21,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import modelos.Clientes;
 
-/**
- *
- * @author Administrador
- */
 public class ClientesJpaController implements Serializable {
 
     public ClientesJpaController(EntityManagerFactory emf) {
@@ -90,6 +86,7 @@ public class ClientesJpaController implements Serializable {
                     illegalOrphanMessages.add("You must retain Facturas " + facturasCollectionOldFacturas + " since its codcliente field is not nullable.");
                 }
             }
+
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
@@ -206,5 +203,5 @@ public class ClientesJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }
