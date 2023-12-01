@@ -3,11 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/modelos/Clientes.java</file>
-            <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/controladores/ClientesJpaController.java</file>
+            <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/modelos/Facturas.java</file>
             <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/controladores/Herramientas.java</file>
             <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/vistas/ClienteJDialog.java</file>
             <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/vistas/FacturaJDialog.java</file>
+            <file>file:/G:/Mi%20unidad/GRADOSUPERIOR/SEGUNDO/AD/TEMA3/TRABAJO_JPA/accdat_t03_prac02_carlosmilenaquesada/src/controladores/FacturasJpaController.java</file>
         </group>
     </open-files>
 </project-private>

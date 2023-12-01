@@ -113,7 +113,7 @@ public class Clientes implements Serializable {
 
     @Override
     public String toString() {
-        return "modelos.Clientes[ codcliente=" + codcliente + " ]";
+        return this.getCodcliente();
     }
     
 }

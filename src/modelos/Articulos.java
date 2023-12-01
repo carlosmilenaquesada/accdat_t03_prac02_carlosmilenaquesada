@@ -114,7 +114,7 @@ public class Articulos implements Serializable {
 
     @Override
     public String toString() {
-        return "modelos.Articulos[ codarticulo=" + codarticulo + " ]";
+        return this.getCodarticulo();
     }
     
 }

@@ -5,14 +5,7 @@ import controladores.Herramientas;
 import controladores.exceptions.IllegalOrphanException;
 import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
@@ -20,7 +13,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import modelos.Clientes;
-import modelos.Facturas;
 
 public class ClienteJDialog extends javax.swing.JDialog {
 
@@ -35,7 +27,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
     }
 
     private void initConfiguracion() {
-        this.ctrlClientes = new ClientesJpaController(Persistence.createEntityManagerFactory("accdat_t03_prac02_carlosmilenaquesadaPU"));
+        this.ctrlClientes = new ClientesJpaController(Herramientas.EMF);
         this.dtmCliente = (DefaultTableModel) jtCliente.getModel();
         this.jtCliente.setCellSelectionEnabled(false);
         this.jtCliente.setRowSelectionAllowed(true);
@@ -217,7 +209,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
         }
         //Si todo ha ido bien, se actualiza la tabla de la vista
         actualizarTabla();
-        
+
 
     }//GEN-LAST:event_jbCrearActionPerformed
 
@@ -231,6 +223,11 @@ public class ClienteJDialog extends javax.swing.JDialog {
         try {
             //Inicio la modificación del cliente
             Clientes cliente = ctrlClientes.findClientes(jtfCodigo.getText());
+            //Si el código de cliente proporcionado no corresponde con ningún cliente, 'findClientes' devuelve null, así que informamos y detenemos le proceso
+            if (cliente == null) {
+                JOptionPane.showMessageDialog(null, Herramientas.mensajes[3], "Error", JOptionPane.ERROR_MESSAGE, null);
+                return;
+            }
             cliente.setNomcliente(jtfNombre.getText());
             ctrlClientes.edit(cliente);
         } catch (NonexistentEntityException ne) {
@@ -262,7 +259,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
         } catch (IllegalOrphanException io) {
             //Si el cliente que se va a borrar está presente en alguna factura en un campo no nulleable, se informará y se detendrá el proceso.
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[28] + " " + io.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            
+
             return;
         } catch (NonexistentEntityException ne) {
             //Si el cliente que se pretende borrar no existe, se informará y se detendrá el proceso.

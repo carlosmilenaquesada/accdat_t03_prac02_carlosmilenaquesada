@@ -98,7 +98,7 @@ public class Familias implements Serializable {
 
     @Override
     public String toString() {
-        return "modelos.Familias[ codfamilia=" + codfamilia + " ]";
+        return this.getCodfamilia();
     }
-    
+
 }
