@@ -1,18 +1,14 @@
 package vistas;
 
+import controladores.ArticulosJpaController;
 import controladores.ClientesJpaController;
 import controladores.FacturasJpaController;
 import controladores.Herramientas;
 import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -20,13 +16,13 @@ import javax.swing.event.ListSelectionListener;
 
 import javax.swing.table.DefaultTableModel;
 import modelos.Articulos;
-import modelos.Clientes;
 import modelos.Facturas;
 
 public class FacturaJDialog extends javax.swing.JDialog {
 
     private FacturasJpaController ctrlFacturas;
     private ClientesJpaController ctrlClientes;
+    private ArticulosJpaController ctrlArticulos;
 
     private DefaultTableModel dtmFactura;
     private List<Facturas> listaFacturas;
@@ -38,6 +34,7 @@ public class FacturaJDialog extends javax.swing.JDialog {
         super(parent, modal);
         this.ctrlFacturas = new FacturasJpaController(Herramientas.EMF);
         this.ctrlClientes = new ClientesJpaController(Herramientas.EMF);
+        this.ctrlArticulos = new ArticulosJpaController(Herramientas.EMF);
         initComponents();
         initConfiguracion();
     }
@@ -219,13 +216,13 @@ public class FacturaJDialog extends javax.swing.JDialog {
                 .addGroup(jpFacturaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jtfNumeroFactura)
                     .addComponent(jtfCodigoCliente)
-                    .addComponent(jtfFechaFactura)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFacturaLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jtfFechaFactura)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jpFacturaLayout.setVerticalGroup(
@@ -246,14 +243,14 @@ public class FacturaJDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtfNumeroFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jtfFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfCodigoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfFechaFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jspFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(jtfCodigoCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jspFactura, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -311,7 +308,7 @@ public class FacturaJDialog extends javax.swing.JDialog {
                         .addGroup(jpLineaFacturaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jtfNumeroFacturaLinea)
                             .addComponent(jtfCodigoArticuloLinea)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addContainerGap())
                     .addGroup(jpLineaFacturaLayout.createSequentialGroup()
@@ -443,10 +440,8 @@ public class FacturaJDialog extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(null, Herramientas.mensajes[3], "Error", JOptionPane.ERROR_MESSAGE, null);
                 return;
             }
-            //Por último, actualizamos los campos modificados en la factura            
-            System.out.println(factura.toStringCompleto());
+            //Por último, actualizamos los campos modificados en la factura       
             ctrlFacturas.edit(factura);
-
         } catch (NumberFormatException nf) {
             //Si el número de factura proporcionado tiene un formato no válido, se informa y se detiene el proceso
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
@@ -472,33 +467,34 @@ public class FacturaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbModificarFacturaActionPerformed
 
     private void jbBorrarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarFacturaActionPerformed
-        /*//Compruebo que número de factura que pretendo borrar no esté vacío
+        //Compruebo que número de factura que pretendo borrar no esté vacío
         if (jtfNumeroFactura.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[0], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Pregunto al usuario si realmente desea borrar la factura, antes de continuar con el proceso
+        //Pregunto al usuario si realmente desea borrar la factura e informo de las cosecuencias (se borran las líneas de factura asociadas a la factura), antes de continuar con el proceso
         int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[33], Herramientas.mensajes[32],
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR FACTURA Y LÍNEAS DE FACTURA", "CANCELAR"}, "NO BORRAR NADA");
         if (opcion != 1) {
             return;
         }
-
-        String error = "";
         try {
-            //Intento borrar la factura con el código proporcionado
-            error = crud.delete(new Facturas((Herramientas.stringABigDecimalEntero(jtfNumeroFactura.getText()))));
-        } catch (ParseException ex) {
+            ctrlFacturas.destroy(Long.valueOf(jtfNumeroFactura.getText()));
+        } catch (NumberFormatException ex) {
+            //Si el código de factura no tiene un formato válido, se informa y se detiene el proceso
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
-        }
-        //Si "error" no está vacío, es que ha ocurrido un error al borrar (probablemente la familia no exista)
-        if (!error.isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[8] + " " + error, "Error", JOptionPane.ERROR_MESSAGE, null);
+        } catch (NonexistentEntityException ex) {
+            //Si el código de factura proporcionado no corresponde con ninguna factura, se informa y se detiene el porceso
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6] + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
+            return;
+        } catch (Exception ex) {
+            //Cualquier otro error, se informará y detendrá el proceso de creación.
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[8] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Si "error" está vacío, es que todo ha ido bien, así que actualizo las tablas de la vista
-        actualizarTablas();*/
+        //Si todo ha ido bien, se actualizan las tablas de la vista
+        actualizarTablas();
     }//GEN-LAST:event_jbBorrarFacturaActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
@@ -506,93 +502,98 @@ public class FacturaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbCrearLineaFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearLineaFacturaActionPerformed
-        /*//Compruebo que el código de artículo y número de factura proporcionados no estén vacíos
+        //Compruebo que el código de artículo y número de factura proporcionados no estén vacíos
         if (jtfCodigoArticuloLinea.getText().isEmpty() || jtfNumeroFacturaLinea.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[9], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Obtengo el artículo que usaré en la pk compuesta de la fila insertada
-        Articulos articulo = (Articulos) crud.read(Articulos.class, jtfCodigoArticuloLinea.getText());
-        if (articulo == null) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[10], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Obtengo la factura que usaré en la pk compuesta de la fila insertada
+        //Obtengo la factura con el número de factura porporcionado por el usuario
         Facturas factura;
         try {
-            factura = (Facturas) crud.read(Facturas.class, Herramientas.stringABigDecimalEntero(jtfNumeroFacturaLinea.getText()));
-        } catch (ParseException ex) {
+            //Si el código de la factura proporcionada por el usuario no tiene un formato apropiado, se informa y se detiene el proceso
+            factura = ctrlFacturas.findFacturas(Long.valueOf(jtfNumeroFacturaLinea.getText()));
+        } catch (NumberFormatException nf) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
+        //Si la factura es null, es que no existe tal factura, por lo tanto detengo el proceso e informo
         if (factura == null) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        if (articulo.getFacturases().contains(factura)) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[11], "Error", JOptionPane.ERROR_MESSAGE, null);
+        //Obtengo el artículo con el codigo proporcionado por el usuario, y lo inserto en la colección de artículos de la factura       
+        Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticuloLinea.getText());
+        //Si el artículo es null, es que no existe tal artículo, por lo tanto detengo el proceso e informo
+        if (articulo == null) {
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[10], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Añado el artículo a la factura, usando el méotodo 'add' personalizado, que también añade la factura al artículo.
-        factura.addArticulo(articulo);
-
-        //Actualizo el master(artículo)
-        String error = crud.update(articulo);
-        //Si "error" no está vacío, es que ha ocurrido un error al borrar (probablemente la familia no exista)
-        if (!error.isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[12] + " " + error, "Error", JOptionPane.ERROR_MESSAGE, null);
+        //Si la factura y el artículo existen, agrego el artículo a la colección de artículos de la factura, y la actualizo (aunque es una relación
+        //de muchos-muchos, no es necesario agregar la factura a la colección de facturas del artículo, ya que este proceso se realiza en el controlador de facturas
+        //o en el de artículos de manera implícita, según quien inicie el proceso de agregar)
+        factura.getArticulosCollection().add(articulo);
+        try {
+            //Actualizo la factura, en la que se ha incluido el artículo, como consecuencia, se crea la línea de factura cuya pk es factura+articulo
+            ctrlFacturas.edit(factura);
+        } catch (NonexistentEntityException ne) {
+            //Aunque anteriormente he comprobado que la factura existía, no está de más manejar esta excepción, ya que en este punto puede haber dejado de existir
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
+            return;
+        } catch (Exception ex) {
+            //Cualquier otro error, se informará y detendrá el proceso de creación.
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[12] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Si "error" está vacío, es que todo ha ido bien, así que actualizo las tablas de la vista
-        actualizarTablas();*/
+        //Si todo ha ido bien, se actualizan las tablas de la vista
+        actualizarTablas();
 
     }//GEN-LAST:event_jbCrearLineaFacturaActionPerformed
 
     private void jbBorrarLineaFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarLineaFacturaActionPerformed
-        /*//Compruebo que el código de artículo y número de factura proporcionados no estén vacíos
+        //Compruebo que el código de artículo y número de factura proporcionados no estén vacíos
         if (jtfCodigoArticuloLinea.getText().isEmpty() || jtfNumeroFacturaLinea.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[9], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Pregunto al usuario si realmente desea borrar la línea, antes de continuar con el proceso
-        int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[35], Herramientas.mensajes[34],
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR LÍNEA DE FACTURA", "CANCELAR"}, "NO BORRAR NADA");
-        if (opcion != 1) {
-            return;
-        }
-        //Obtengo el artículo que usaré en la pk compuesta de la fila insertada
-        Articulos articulo = (Articulos) crud.read(Articulos.class, jtfCodigoArticuloLinea.getText());
-        if (articulo == null) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[10], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Obtengo la factura que usaré en la pk compuesta de la fila insertada
+        //Obtengo la factura con el número de factura porporcionado por el usuario
         Facturas factura;
         try {
-            factura = (Facturas) crud.read(Facturas.class, Herramientas.stringABigDecimalEntero(jtfNumeroFacturaLinea.getText()));
-        } catch (ParseException ex) {
+            //Si el código de la factura proporcionada por el usuario no tiene un formato apropiado, se informa y se detiene el proceso
+            factura = ctrlFacturas.findFacturas(Long.valueOf(jtfNumeroFacturaLinea.getText()));
+        } catch (NumberFormatException nf) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
+        //Si la factura es null, es que no existe tal factura, por lo tanto detengo el proceso e informo
         if (factura == null) {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        if (!articulo.getFacturases().contains(factura)) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[13], "Error", JOptionPane.ERROR_MESSAGE, null);
+        //Obtengo el artículo con el codigo proporcionado por el usuario, y lo inserto en la colección de artículos de la factura       
+        Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticuloLinea.getText());
+        //Si el artículo es null, es que no existe tal artículo, por lo tanto detengo el proceso e informo
+        if (articulo == null) {
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[10], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Borro el artículo a la factura, usando el méotodo 'remove' personalizado, que también borra la factura del artículo.
-        factura.removeArticulo(articulo);
-        //En este caso, para que funcione, hay que actualizar el slave(factura)
-        String error = crud.update(factura);
-        //Si "error" no está vacío, es que ha ocurrido un error al borrar (probablemente la familia no exista)
-        if (!error.isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[13] + " " + error, "Error", JOptionPane.ERROR_MESSAGE, null);
+        //Si la factura y el artículo existen, elimino el artículo de la colección de artículos de la factura, y la actualizo (aunque es una relación
+        //de muchos-muchos, no es necesario eliminar la factura de la colección de facturas del artículo, ya que este proceso se realiza en el controlador de facturas
+        //o en el de artículos de manera implícita, según quien inicie el proceso de borrado)
+        factura.getArticulosCollection().remove(articulo);
+        try {
+            //Actualizo la factura, en la que ya no está el artículo, como consecuencia, se elimina la línea de factura cuya pk es factura+articulo
+            ctrlFacturas.edit(factura);
+        } catch (NonexistentEntityException ne) {
+            //Aunque anteriormente he comprobado que la factura existía, no está de más manejar esta excepción, ya que en este punto puede haber dejado de existir
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
+            return;
+        } catch (Exception ex) {
+            //Cualquier otro error, se informará y detendrá el proceso de creación.
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[12] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-        //Si "error" está vacío, es que todo ha ido bien, así que actualizo las tablas de la vista
-        actualizarTablas();*/
+        //Si todo ha ido bien, se actualizan las tablas de la vista
+        actualizarTablas();
     }//GEN-LAST:event_jbBorrarLineaFacturaActionPerformed
 
     public static void main(String args[]) {

@@ -85,6 +85,9 @@ public class ArticulosJpaController implements Serializable {
             Articulos persistentArticulos = em.find(Articulos.class, articulos.getCodarticulo());
             Familias codfamiliaOld = persistentArticulos.getCodfamilia();
             Familias codfamiliaNew = articulos.getCodfamilia();
+           
+            
+            
             Collection<Facturas> facturasCollectionOld = persistentArticulos.getFacturasCollection();
             Collection<Facturas> facturasCollectionNew = articulos.getFacturasCollection();
             if (codfamiliaNew != null) {

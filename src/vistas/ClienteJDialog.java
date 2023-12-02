@@ -252,7 +252,12 @@ public class ClienteJDialog extends javax.swing.JDialog {
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[26], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
         }
-
+        //Pregunto al usuario si realmente desea borrar el cliente e informo de las cosecuencias (se borrarán las facturas asociadas al cliente y lineas de factura), antes de continuar con el proceso
+        int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[31], Herramientas.mensajes[30],
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR CLIENTE, FACTURAS ASOCIADAS Y LÍNEAS DE FACTURA ", "CANCELAR"}, "NO BORRAR NADA");
+        if (opcion != 1) {
+            return;
+        }
         try {
             //Inicio el borrado del cliente
             ctrlClientes.destroy(jtfCodigo.getText());

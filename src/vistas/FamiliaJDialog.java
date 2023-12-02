@@ -1,6 +1,6 @@
 package vistas;
 
-import controladores.Crud;
+import controladores.FamiliasJpaController;
 import controladores.Herramientas;
 import java.text.ParseException;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import modelos.Familias;
 
 public class FamiliaJDialog extends javax.swing.JDialog {
 
-    private Crud crud;
+    private FamiliasJpaController ctrlFamilias;
 
     private DefaultTableModel dtmFamilia;
     private List<Familias> listaFamilias;
@@ -27,7 +27,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
 
     public FamiliaJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.crud = new Crud();
+        ctrlFamilias = new FamiliasJpaController(Herramientas.EMF);
         initComponents();
         initConfiguracion();
     }
@@ -78,7 +78,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }
 
     private void actualizarTablas() {
-        Herramientas.limpiarTabla(dtmFamilia);
+        dtmFamilia.setRowCount(0);
         this.listaFamilias = crud.readAllHQL("from Familias f");
         for (Familias f : this.listaFamilias) {
             dtmFamilia.addRow(new Object[]{f.getCodfamilia(), f.getNomfamilia(), f.getDescfamilia()});
@@ -91,7 +91,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }
 
     private void actualizarTablaArticulos() {
-        Herramientas.limpiarTabla(dtmArticulo);
+        dtmArticulo.setRowCount(0);
         if (familiaEnFoco != null) {
             for (Articulos a : (Set<Articulos>) familiaEnFoco.getArticuloses()) {
                 dtmArticulo.addRow(
@@ -117,8 +117,6 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jtfCodigoFamilia = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jtfNombreFamilia = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        jtfDescripcionFamilia = new javax.swing.JTextField();
         jbCrearFamilia = new javax.swing.JButton();
         jbModificarFamilia = new javax.swing.JButton();
         jbBorrarFamilia = new javax.swing.JButton();
@@ -132,8 +130,6 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jtfCodigoArticulo = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jtfNombreArticulo = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        jtfPrecioArticulo = new javax.swing.JTextField();
         jbCrearArticulo = new javax.swing.JButton();
         jbModificarArticulo = new javax.swing.JButton();
         jbBorrarArticulo = new javax.swing.JButton();
@@ -151,8 +147,6 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jLabel1.setText("Código");
 
         jLabel2.setText("Nombre");
-
-        jLabel3.setText("Descripción");
 
         jbCrearFamilia.setText("Crear familia");
         jbCrearFamilia.addActionListener(new java.awt.event.ActionListener() {
@@ -187,11 +181,11 @@ public class FamiliaJDialog extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Código", "Nombre", "Descripción"
+                "Familia"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false
+                false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -220,17 +214,15 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jtfCodigoFamilia)
+                    .addComponent(jtfNombreFamilia)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFamiliaLayout.createSequentialGroup()
+                        .addGap(0, 46, Short.MAX_VALUE)
+                        .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jpFamiliaLayout.createSequentialGroup()
                         .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 46, Short.MAX_VALUE))
-                    .addComponent(jtfNombreFamilia)
-                    .addComponent(jtfDescripcionFamilia)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFamiliaLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpFamiliaLayout.setVerticalGroup(
@@ -245,20 +237,16 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                             .addComponent(jbBorrarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jpFamiliaLayout.createSequentialGroup()
+                .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFamiliaLayout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtfCodigoFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfNombreFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfDescripcionFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jspFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                        .addComponent(jtfNombreFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jspFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -269,8 +257,6 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jLabel4.setText("Código");
 
         jLabel5.setText("Nombre");
-
-        jLabel7.setText("Precio (123.45)");
 
         jbCrearArticulo.setText("Crear artículo");
         jbCrearArticulo.addActionListener(new java.awt.event.ActionListener() {
@@ -298,11 +284,11 @@ public class FamiliaJDialog extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Familia", "Código", "Nombre", "Precio"
+                "Articulos"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -337,29 +323,23 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                         .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jtfPrecioArticulo))
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jpArticuloLayout.setVerticalGroup(
             jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpArticuloLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jbCrearArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbModificarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbBorrarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpArticuloLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jbCrearArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbModificarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbBorrarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpArticuloLayout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jpArticuloLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtfFamiliaArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -368,13 +348,9 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfNombreArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfPrecioArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jspArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                .addGap(47, 47, 47))
+                        .addComponent(jtfNombreArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jspArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(59, 59, 59))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -617,11 +593,9 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JButton jbActualizar;
     private javax.swing.JButton jbBorrarArticulo;
     private javax.swing.JButton jbBorrarFamilia;
@@ -637,10 +611,8 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private javax.swing.JTable jtFamilia;
     private javax.swing.JTextField jtfCodigoArticulo;
     private javax.swing.JTextField jtfCodigoFamilia;
-    private javax.swing.JTextField jtfDescripcionFamilia;
     private javax.swing.JTextField jtfFamiliaArticulo;
     private javax.swing.JTextField jtfNombreArticulo;
     private javax.swing.JTextField jtfNombreFamilia;
-    private javax.swing.JTextField jtfPrecioArticulo;
     // End of variables declaration//GEN-END:variables
 }

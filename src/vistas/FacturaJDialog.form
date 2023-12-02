@@ -96,14 +96,14 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jtfNumeroFactura" alignment="0" max="32767" attributes="0"/>
                       <Component id="jtfCodigoCliente" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jtfFechaFactura" alignment="0" max="32767" attributes="0"/>
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           <Component id="jbActualizar" min="-2" pref="110" max="-2" attributes="0"/>
                       </Group>
+                      <Component id="jLabel1" alignment="0" pref="310" max="32767" attributes="0"/>
+                      <Component id="jLabel2" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jtfFechaFactura" alignment="0" max="32767" attributes="0"/>
                       <Component id="jLabel3" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jLabel2" max="32767" attributes="0"/>
-                      <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -130,15 +130,15 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfNumeroFactura" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jLabel3" min="-2" pref="30" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="jtfFechaFactura" min="-2" pref="30" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel2" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfCodigoCliente" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel3" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtfFechaFactura" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jspFactura" pref="0" max="32767" attributes="0"/>
+                      <Component id="jspFactura" min="-2" pref="215" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -258,7 +258,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="jtfNumeroFacturaLinea" alignment="0" max="32767" attributes="0"/>
                               <Component id="jtfCodigoArticuloLinea" alignment="0" max="32767" attributes="0"/>
-                              <Component id="jLabel4" pref="163" max="32767" attributes="0"/>
+                              <Component id="jLabel4" pref="316" max="32767" attributes="0"/>
                               <Component id="jLabel5" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>

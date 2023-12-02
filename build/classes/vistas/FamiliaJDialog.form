@@ -95,19 +95,17 @@
                   <EmptySpace type="separate" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Component id="jtfCodigoFamilia" alignment="0" max="32767" attributes="0"/>
+                      <Component id="jtfNombreFamilia" alignment="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="1" attributes="0">
+                          <EmptySpace min="0" pref="46" max="32767" attributes="0"/>
+                          <Component id="jbActualizar" min="-2" pref="110" max="-2" attributes="0"/>
+                      </Group>
                       <Group type="102" attributes="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabel3" max="-2" attributes="0"/>
                               <Component id="jLabel2" min="-2" pref="110" max="-2" attributes="0"/>
                               <Component id="jLabel1" min="-2" pref="110" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="46" max="32767" attributes="0"/>
-                      </Group>
-                      <Component id="jtfNombreFamilia" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jtfDescripcionFamilia" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="1" attributes="0">
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                          <Component id="jbActualizar" min="-2" pref="110" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
@@ -129,8 +127,8 @@
                       <Component id="jbActualizar" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
                           <Component id="jLabel1" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfCodigoFamilia" min="-2" pref="30" max="-2" attributes="0"/>
@@ -138,12 +136,8 @@
                           <Component id="jLabel2" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfNombreFamilia" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel3" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtfDescripcionFamilia" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jspFamilia" pref="0" max="32767" attributes="0"/>
+                      <Component id="jspFamilia" min="-2" pref="215" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
@@ -164,13 +158,6 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="jtfNombreFamilia">
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel3">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Descripci&#xf3;n"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JTextField" name="jtfDescripcionFamilia">
         </Component>
         <Component class="javax.swing.JButton" name="jbCrearFamilia">
           <Properties>
@@ -214,24 +201,12 @@
             <Component class="javax.swing.JTable" name="jtFamilia">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="3" rowCount="0">
-                    <Column editable="false" title="C&#xf3;digo" type="java.lang.Object"/>
-                    <Column editable="false" title="Nombre" type="java.lang.Object"/>
-                    <Column editable="false" title="Descripci&#xf3;n" type="java.lang.Object"/>
+                  <Table columnCount="1" rowCount="0">
+                    <Column editable="false" title="Familia" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="1">
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>
@@ -288,11 +263,9 @@
                               <Component id="jLabel4" min="-2" pref="110" max="-2" attributes="0"/>
                               <Component id="jLabel5" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
                               <Component id="jLabel6" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
-                              <Component id="jLabel7" min="-2" pref="110" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="jtfPrecioArticulo" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -301,24 +274,17 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jbCrearArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="jbModificarArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="jbBorrarArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jbCrearArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                              <Component id="jbModificarArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                              <Component id="jbBorrarArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace max="32767" attributes="0"/>
-                      </Group>
                       <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="jLabel6" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" attributes="0">
                           <Component id="jtfFamiliaArticulo" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel4" min="-2" pref="30" max="-2" attributes="0"/>
@@ -328,14 +294,10 @@
                           <Component id="jLabel5" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfNombreArticulo" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jLabel7" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtfPrecioArticulo" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jspArticulo" pref="0" max="32767" attributes="0"/>
+                      <Component id="jspArticulo" min="-2" pref="240" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="47" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -361,13 +323,6 @@
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="jtfNombreArticulo">
-        </Component>
-        <Component class="javax.swing.JLabel" name="jLabel7">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Precio (123.45)"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JTextField" name="jtfPrecioArticulo">
         </Component>
         <Component class="javax.swing.JButton" name="jbCrearArticulo">
           <Properties>
@@ -403,30 +358,12 @@
             <Component class="javax.swing.JTable" name="jtArticulo">
               <Properties>
                 <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                  <Table columnCount="4" rowCount="0">
-                    <Column editable="false" title="Familia" type="java.lang.Object"/>
-                    <Column editable="false" title="C&#xf3;digo" type="java.lang.Object"/>
-                    <Column editable="false" title="Nombre" type="java.lang.Object"/>
-                    <Column editable="false" title="Precio" type="java.lang.Object"/>
+                  <Table columnCount="1" rowCount="0">
+                    <Column editable="false" title="Articulos" type="java.lang.Object"/>
                   </Table>
                 </Property>
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="1">
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
-                    <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                      <Title/>
-                      <Editor/>
-                      <Renderer/>
-                    </Column>
                     <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                       <Title/>
                       <Editor/>

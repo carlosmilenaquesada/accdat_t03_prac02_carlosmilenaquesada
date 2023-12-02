@@ -36,7 +36,6 @@ import javax.persistence.TemporalType;
 public class Facturas implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    /*ORIGINAL
     @Id
     @Basic(optional = false)
     @Column(name = "NUMFACTURA")
@@ -49,21 +48,6 @@ public class Facturas implements Serializable {
     @JoinColumn(name = "CODCLIENTE", referencedColumnName = "CODCLIENTE")
     @ManyToOne(optional = false)
     private Clientes codcliente;
-    */
-    /*MODIFICADO*/
-    @Id
-    @Basic(optional = false)
-    @Column(name = "NUMFACTURA")
-    private Long numfactura;
-    @Column(name = "FECHAFACTURA")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechafactura;
-    @ManyToMany(mappedBy = "facturasCollection", fetch = FetchType.EAGER)//cambio aplicado
-    private Collection<Articulos> articulosCollection;
-    @JoinColumn(name = "CODCLIENTE", referencedColumnName = "CODCLIENTE")
-    @ManyToOne(optional = false)
-    private Clientes codcliente;
-    
 
     public Facturas() {
     }
@@ -127,11 +111,6 @@ public class Facturas implements Serializable {
     @Override
     public String toString() {
         return this.getNumfactura().toString();
-    }
-
-    public String toStringCompleto() {
-        return "Facturas{" + "numfactura=" + numfactura + ", fechafactura=" + fechafactura + ", articulosCollection=" + articulosCollection + ", codcliente=" + codcliente + '}';
-
     }
 
 }
