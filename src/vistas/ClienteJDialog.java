@@ -1,13 +1,16 @@
 package vistas;
 
 import controladores.ClientesJpaController;
+import controladores.GestorErrores;
+import static controladores.GestorInformacion.panelBorradoCliente;
 import controladores.Herramientas;
 import controladores.exceptions.IllegalOrphanException;
 import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
+import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -19,6 +22,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
     private ClientesJpaController ctrlClientes;
     private DefaultTableModel dtmCliente;
     private List<Clientes> listaClientes;
+    private JTextField[] inputsCliente;
 
     public ClienteJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -32,6 +36,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
         this.jtCliente.setCellSelectionEnabled(false);
         this.jtCliente.setRowSelectionAllowed(true);
         this.jtCliente.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        this.inputsCliente = new JTextField[]{jtfCodigo, jtfNombre};
         actualizarTabla();
 
         this.jtCliente.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -45,6 +50,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
     }
 
     private void actualizarInputsTexto() {
+        GestorErrores.cambiarABordeDefecto(inputsCliente);
         Clientes clienteSeleccionado = (Clientes) jtCliente.getValueAt(jtCliente.getSelectedRow(), 0);
         jtfCodigo.setText(clienteSeleccionado.getCodcliente());
         jtfNombre.setText(clienteSeleccionado.getNomcliente());
@@ -190,94 +196,108 @@ public class ClienteJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbActualizarTablaActionPerformed
 
     private void jbCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearActionPerformed
-        //Compruebo que código de cliente que pretendo crear no esté vacío
-        if (jtfCodigo.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[26], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsCliente, GestorErrores.mensajesInputsVaciosCliente);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            try {
+                //Inicio la creación del nuevo cliente
+                ctrlClientes.create(new Clientes(jtfCodigo.getText(), jtfNombre.getText()));
+            } catch (PreexistingEntityException pe) {
+                //Si el cliente ya existe, se recoge el error.
+                errores.add(pe.getMessage());
+                GestorErrores.cambiarABordeError(jtfCodigo);
+            } catch (Exception ex) {
+                //Cualquier otro error, será recogido
+                errores.add(ex.getMessage());
+            }
         }
-        try {
-            //Inicio la creación del nuevo cliente
-            ctrlClientes.create(new Clientes(jtfCodigo.getText(), jtfNombre.getText()));
-        } catch (PreexistingEntityException pe) {
-            //Si el cliente ya existe, se informará y se detendrá el proceso.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[28] + " " + pe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de creación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[28] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la creación, se actualiza la tabla de la vista
+            actualizarTabla();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
         }
-        //Si todo ha ido bien, se actualiza la tabla de la vista
-        actualizarTabla();
-
-
     }//GEN-LAST:event_jbCrearActionPerformed
 
     private void jbModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarActionPerformed
-        //Compruebo que código de cliente que pretendo modificar no esté vacío
-        if (jtfCodigo.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[26], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-
-        try {
-            //Inicio la modificación del cliente
-            Clientes cliente = ctrlClientes.findClientes(jtfCodigo.getText());
-            //Si el código de cliente proporcionado no corresponde con ningún cliente, 'findClientes' devuelve null, así que informamos y detenemos le proceso
-            if (cliente == null) {
-                JOptionPane.showMessageDialog(null, Herramientas.mensajes[3], "Error", JOptionPane.ERROR_MESSAGE, null);
-                return;
-            }
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsCliente, GestorErrores.mensajesInputsVaciosCliente);
+        //Inicio la modificación del cliente
+        Clientes cliente = ctrlClientes.findClientes(jtfCodigo.getText());
+        //Si el cliente exite, se modificarán los atributos, de lo contrario, se generará error.
+        if (cliente != null) {
             cliente.setNomcliente(jtfNombre.getText());
-            ctrlClientes.edit(cliente);
-        } catch (NonexistentEntityException ne) {
-            //Si el cliente que se pretende modificar no existe, se informará y se detendrá el proceso.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[40] + " " + ne.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de modificación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[40] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+        } else {
+            errores.add(GestorErrores.mensajes[3]);
         }
 
-        //Si todo ha ido bien, se actualiza la tabla de la vista
-        actualizarTabla();
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            try {
+                ctrlClientes.edit(cliente);
+            } catch (IllegalOrphanException io) {
+                //Si el cliente que voy a modificar no contiene al menos las mismas facturas que el cliente que se encuentra en la base de datos,
+                //no se podrá actualizar, ya que las facturas que no estarían contenidas en el cliente que estoy editando quedarían sin cliente, y cliente
+                //es un atributo not null. Aunque en este punto yo no estoy modificando ninguna factura, es posible que otro usuario de la base de 
+                //datos sí lo haya hecho mientras yo manipulo al cliente, y esto podría disparar esta excepción.
+                errores.add(String.join("\n", io.getMessages()));
+            } catch (NonexistentEntityException ne) {
+                //Si el cliente que se pretende modificar no existe, se genera el error.
+                errores.add(ne.getMessage());
+            } catch (Exception ex) {
+                //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                errores.add(ex.getMessage());
+            }
+        }
+
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la modificación, se actualiza la tabla de la vista
+            actualizarTabla();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
 
 
     }//GEN-LAST:event_jbModificarActionPerformed
 
     private void jbBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarActionPerformed
-        //Compruebo que código de cliente que pretendo borrar no esté vacío
-        if (jtfCodigo.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[26], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(new JTextField[]{jtfCodigo}, GestorErrores.mensajesInputsVaciosCliente);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            try {
+                //Inicio el borrado del cliente
+                ctrlClientes.destroy(jtfCodigo.getText());
+            } catch (IllegalOrphanException io) {
+                //Si el cliente que se va a borrar está presente en alguna factura, no podrá ser borrado de manera implícita con el destroy, produciendo esta excepción.
+                //En tal caso, le pregunto al usuario si realmente quiere borrar cliente con borrado en cascada de facturas y lineas de facturas                
+                int opcion = JOptionPane.showOptionDialog(this, panelBorradoCliente[0], panelBorradoCliente[1],
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                        new Object[]{panelBorradoCliente[2], panelBorradoCliente[3], panelBorradoCliente[4]}, panelBorradoCliente[2]);
+                if (opcion == -1) {
+                    //Si el usuario acepta, procedo con el borrado en cascada, el cual he implementado a través de una función
+                    //creada por mí llamada destroyEnCascada().
+                    ctrlClientes.destroyEnCascada(jtfCodigo.getText());
+                }
+            } catch (NonexistentEntityException ne) {
+                //Si el cliente que se pretende borrar no existe, se informará y se detendrá el proceso.
+                errores.add(ne.getMessage());
+            } catch (Exception ex) {
+                //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                errores.add(ex.getMessage());
+            }
         }
-        //Pregunto al usuario si realmente desea borrar el cliente e informo de las cosecuencias (se borrarán las facturas asociadas al cliente y lineas de factura), antes de continuar con el proceso
-        int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[31], Herramientas.mensajes[30],
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR CLIENTE, FACTURAS ASOCIADAS Y LÍNEAS DE FACTURA ", "CANCELAR"}, "NO BORRAR NADA");
-        if (opcion != 1) {
-            return;
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras el borrado, se actualiza la tabla de la vista
+            actualizarTabla();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
         }
-        try {
-            //Inicio el borrado del cliente
-            ctrlClientes.destroy(jtfCodigo.getText());
-        } catch (IllegalOrphanException io) {
-            //Si el cliente que se va a borrar está presente en alguna factura en un campo no nulleable, se informará y se detendrá el proceso.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[28] + " " + io.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-
-            return;
-        } catch (NonexistentEntityException ne) {
-            //Si el cliente que se pretende borrar no existe, se informará y se detendrá el proceso.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[28] + " " + ne.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de modificación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[28] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-
-        //Si "error" está vacío, es que todo ha ido bien, así que actualizo las tablas de la vista
-        actualizarTabla();
     }//GEN-LAST:event_jbBorrarActionPerformed
 
     /**
