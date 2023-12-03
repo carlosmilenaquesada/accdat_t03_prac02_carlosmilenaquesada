@@ -10,6 +10,8 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -468,34 +470,39 @@ public class FacturaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbModificarFacturaActionPerformed
 
     private void jbBorrarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarFacturaActionPerformed
-        //Compruebo que número de factura que pretendo borrar no esté vacío
-        if (jtfNumeroFactura.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[0], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Pregunto al usuario si realmente desea borrar la factura e informo de las cosecuencias (se borran las líneas de factura asociadas a la factura), antes de continuar con el proceso
-        int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[33], Herramientas.mensajes[32],
-                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR FACTURA Y LÍNEAS DE FACTURA", "CANCELAR"}, "NO BORRAR NADA");
-        if (opcion != 1) {
-            return;
-        }
         try {
             ctrlFacturas.destroy(Long.valueOf(jtfNumeroFactura.getText()));
-        } catch (NumberFormatException ex) {
+            /*//Compruebo que número de factura que pretendo borrar no esté vacío
+            if (jtfNumeroFactura.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, Herramientas.mensajes[0], "Error", JOptionPane.ERROR_MESSAGE, null);
+            return;
+            }
+            //Pregunto al usuario si realmente desea borrar la factura e informo de las cosecuencias (se borran las líneas de factura asociadas a la factura), antes de continuar con el proceso
+            int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[33], Herramientas.mensajes[32],
+            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR FACTURA Y LÍNEAS DE FACTURA", "CANCELAR"}, "NO BORRAR NADA");
+            if (opcion != 1) {
+            return;
+            }
+            try {
+            ctrlFacturas.destroy(Long.valueOf(jtfNumeroFactura.getText()));
+            } catch (NumberFormatException ex) {
             //Si el código de factura no tiene un formato válido, se informa y se detiene el proceso
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
-        } catch (NonexistentEntityException ex) {
+            } catch (NonexistentEntityException ex) {
             //Si el código de factura proporcionado no corresponde con ninguna factura, se informa y se detiene el porceso
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[6] + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
-        } catch (Exception ex) {
+            } catch (Exception ex) {
             //Cualquier otro error, se informará y detendrá el proceso de creación.
             JOptionPane.showMessageDialog(null, Herramientas.mensajes[8] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
             return;
+            }
+            //Si todo ha ido bien, se actualizan las tablas de la vista
+            actualizarTablas();*/
+        } catch (NonexistentEntityException ex) {
+            Logger.getLogger(FacturaJDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //Si todo ha ido bien, se actualizan las tablas de la vista
-        actualizarTablas();
     }//GEN-LAST:event_jbBorrarFacturaActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed

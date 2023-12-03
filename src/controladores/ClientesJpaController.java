@@ -17,6 +17,7 @@ import modelos.Facturas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import modelos.Clientes;
@@ -74,11 +75,11 @@ public class ClientesJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            
+
             Clientes persistentClientes = em.find(Clientes.class, clientes.getCodcliente());
             Collection<Facturas> facturasCollectionOld = persistentClientes.getFacturasCollection();
             Collection<Facturas> facturasCollectionNew = clientes.getFacturasCollection();
-            
+
             List<String> illegalOrphanMessages = null;
             for (Facturas facturasCollectionOldFacturas : facturasCollectionOld) {
                 if (!facturasCollectionNew.contains(facturasCollectionOldFacturas)) {
@@ -159,11 +160,9 @@ public class ClientesJpaController implements Serializable {
             }
         }
     }
-    
-    
-    public void destroyEnCascada(String id) {
-        System.out.println("cascada");
-        /*EntityManager em = null;
+
+    public void destroyEnCascada(String id) throws NonexistentEntityException {
+        EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
@@ -173,26 +172,21 @@ public class ClientesJpaController implements Serializable {
                 clientes.getCodcliente();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The clientes with id " + id + " no longer exists.", enfe);
+            }   
+            Collection<Facturas> facturasDelCliente = clientes.getFacturasCollection();
+            for (Facturas factura : facturasDelCliente) {                
+                em.remove(factura);
             }
-            List<String> illegalOrphanMessages = null;
-            Collection<Facturas> facturasCollectionOrphanCheck = clientes.getFacturasCollection();
-            for (Facturas facturasCollectionOrphanCheckFacturas : facturasCollectionOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Clientes (" + clientes + ") cannot be destroyed since the Facturas " + facturasCollectionOrphanCheckFacturas + " in its facturasCollection field has a non-nullable codcliente field.");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            em.remove(clientes);
+            clientes.getFacturasCollection().clear();
+            em.remove(clientes);            
             em.getTransaction().commit();
         } finally {
             if (em != null) {
                 em.close();
             }
-        }*/
+        }
     }
+    
 
     public List<Clientes> findClientesEntities() {
         return findClientesEntities(true, -1, -1);
@@ -239,6 +233,5 @@ public class ClientesJpaController implements Serializable {
             em.close();
         }
     }
-
 
 }

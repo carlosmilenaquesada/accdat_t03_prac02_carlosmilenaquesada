@@ -1,5 +1,6 @@
 package vistas;
 
+import controladores.ArticulosJpaController;
 import controladores.FamiliasJpaController;
 import controladores.Herramientas;
 import java.text.ParseException;
@@ -7,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
@@ -14,11 +16,13 @@ import javax.swing.event.ListSelectionListener;
 
 import javax.swing.table.DefaultTableModel;
 import modelos.Articulos;
+import modelos.Facturas;
 import modelos.Familias;
 
 public class FamiliaJDialog extends javax.swing.JDialog {
 
     private FamiliasJpaController ctrlFamilias;
+    private ArticulosJpaController ctrlArticulos;
 
     private DefaultTableModel dtmFamilia;
     private List<Familias> listaFamilias;
@@ -29,6 +33,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     public FamiliaJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         ctrlFamilias = new FamiliasJpaController(Herramientas.EMF);
+        ctrlArticulos = new ArticulosJpaController(Herramientas.EMF);
         initComponents();
         initConfiguracion();
     }
@@ -101,7 +106,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jtfCodigoArticulo.setText("");
         jtfFamiliaArticulo.setText("");
         jtfNombreArticulo.setText("");
-        
+
     }
 
     @SuppressWarnings("unchecked")
@@ -380,15 +385,15 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbCrearFamiliaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearFamiliaActionPerformed
-       
+
     }//GEN-LAST:event_jbCrearFamiliaActionPerformed
 
     private void jbModificarFamiliaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarFamiliaActionPerformed
-       
+
     }//GEN-LAST:event_jbModificarFamiliaActionPerformed
 
     private void jbBorrarFamiliaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarFamiliaActionPerformed
-       
+
     }//GEN-LAST:event_jbBorrarFamiliaActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
@@ -396,15 +401,15 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbCrearArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearArticuloActionPerformed
-       
+
     }//GEN-LAST:event_jbCrearArticuloActionPerformed
 
     private void jbModificarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarArticuloActionPerformed
-        
+
     }//GEN-LAST:event_jbModificarArticuloActionPerformed
 
     private void jbBorrarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarArticuloActionPerformed
-        
+
     }//GEN-LAST:event_jbBorrarArticuloActionPerformed
 
     public static void main(String args[]) {

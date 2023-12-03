@@ -9,6 +9,8 @@ import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -278,10 +280,17 @@ public class ClienteJDialog extends javax.swing.JDialog {
                 int opcion = JOptionPane.showOptionDialog(this, panelBorradoCliente[0], panelBorradoCliente[1],
                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
                         new Object[]{panelBorradoCliente[2], panelBorradoCliente[3], panelBorradoCliente[4]}, panelBorradoCliente[2]);
-                if (opcion == -1) {
-                    //Si el usuario acepta, procedo con el borrado en cascada, el cual he implementado a través de una función
-                    //creada por mí llamada destroyEnCascada().
-                    ctrlClientes.destroyEnCascada(jtfCodigo.getText());
+                if (opcion == 1) {
+                    try {
+                        //Si el usuario acepta, procedo con el borrado en cascada, el cual he implementado a través de una función
+                        //creada por mí llamada destroyEnCascada().
+                        ctrlClientes.destroyEnCascada(jtfCodigo.getText());
+                    } catch (NonexistentEntityException nec) {
+                        //Aunque acabo de comprobar en el paso anterior si el cliente existía,
+                        //debo veriricarlo también en este punto, ya que el usuario debe aceptar el
+                        //borrado mediante un JOptionPane y eso puede demorar un tiempo                        
+                        errores.add(nec.getMessage());
+                    }
                 }
             } catch (NonexistentEntityException ne) {
                 //Si el cliente que se pretende borrar no existe, se informará y se detendrá el proceso.
