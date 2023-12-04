@@ -82,31 +82,26 @@ public class FacturasJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            
-            
+
             Facturas persistentFacturas = em.find(Facturas.class, facturas.getNumfactura());
             Clientes codclienteOld = persistentFacturas.getCodcliente();
             Clientes codclienteNew = facturas.getCodcliente();
-            
-            
+
             Collection<Articulos> articulosCollectionOld = persistentFacturas.getArticulosCollection();
             Collection<Articulos> articulosCollectionNew = facturas.getArticulosCollection();
-            
-            
+
             if (codclienteNew != null) {
                 codclienteNew = em.getReference(codclienteNew.getClass(), codclienteNew.getCodcliente());
                 facturas.setCodcliente(codclienteNew);
             }
-            
-            
+
             Collection<Articulos> attachedArticulosCollectionNew = new ArrayList<Articulos>();
-            
+
             for (Articulos articulosCollectionNewArticulosToAttach : articulosCollectionNew) {
                 articulosCollectionNewArticulosToAttach = em.getReference(articulosCollectionNewArticulosToAttach.getClass(), articulosCollectionNewArticulosToAttach.getCodarticulo());
                 attachedArticulosCollectionNew.add(articulosCollectionNewArticulosToAttach);
             }
-            
-            
+
             articulosCollectionNew = attachedArticulosCollectionNew;
             facturas.setArticulosCollection(articulosCollectionNew);
             facturas = em.merge(facturas);
@@ -118,9 +113,7 @@ public class FacturasJpaController implements Serializable {
                 codclienteNew.getFacturasCollection().add(facturas);
                 codclienteNew = em.merge(codclienteNew);
             }
-            
-            
-            
+
             for (Articulos articulosCollectionOldArticulos : articulosCollectionOld) {
                 if (!articulosCollectionNew.contains(articulosCollectionOldArticulos)) {
                     articulosCollectionOldArticulos.getFacturasCollection().remove(facturas);
@@ -226,5 +219,5 @@ public class FacturasJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

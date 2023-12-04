@@ -60,6 +60,13 @@ public class Articulos implements Serializable {
         this.nomarticulo = nomarticulo;
     }
 
+    //Constructor creado por mí
+    public Articulos(String codarticulo, String nomarticulo, Familias codFamilia) {
+        this.codarticulo = codarticulo;
+        this.nomarticulo = nomarticulo;
+        this.codfamilia = codFamilia;
+    }
+
     public String getCodarticulo() {
         return codarticulo;
     }
@@ -116,5 +123,5 @@ public class Articulos implements Serializable {
     public String toString() {
         return this.getCodarticulo();
     }
-    
+
 }

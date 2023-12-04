@@ -39,8 +39,8 @@ public class GestorErrores {
      * además, el borde del JTextField cambia a Color.red, indicando así al
      * usuario que el campo no puede estar vacío.
      *
-     * Por index, cada elemento del array JTextField 'jtfLista' está asociado
-     * a un error en el array de String 'mensajeError'
+     * Por index, cada elemento del array JTextField 'jtfLista' está asociado a
+     * un error en el array de String 'mensajeError'
      *
      * @param jtfLista La lista de JTextField sobre los que se realizarán la
      * comprobación.
@@ -49,7 +49,7 @@ public class GestorErrores {
      * @return Un ArrayList de String con los errores recopilados.
      */
     public static ArrayList<String> validarInput(JTextField[] jtfLista, String[] mensajesError) {
-        ArrayList<String> errores = new ArrayList<>();
+        ArrayList<String> errores = new ArrayList<>();       
         cambiarABordeDefecto(jtfLista);
         for (int i = 0; i < jtfLista.length; i++) {
             if (jtfLista[i].getText().isEmpty()) {
@@ -62,11 +62,20 @@ public class GestorErrores {
 
     public static void mostrarErrores(ArrayList<String> errores) {
         JOptionPane.showMessageDialog(null, String.join("\n", errores), "Se encontraron errores", JOptionPane.ERROR_MESSAGE, null);
-    }    
-    
+    }
+
     public static String[] mensajesInputsVaciosCliente = new String[]{
         "El campo del código de cliente no puede estar vacío",//0
         "El campo del nombre de cliente no puede estar vacío",//1
+    };
+    public static String[] mensajesInputsVaciosFamilia = new String[]{
+        "El campo del código de familia no puede estar vacío",//0
+        "El campo del nombre de familia no puede estar vacío",//1
+    };
+    public static String[] mensajesInputsVaciosArticulos = new String[]{
+        "El campo del código de artículo no puede estar vacío",//0
+        "El campo de familia de artículo no puede estar vacío",//1
+        "El campo de nombre de artículo no puede estar vacío"
     };
 
     public static String[] mensajes = new String[]{
@@ -113,7 +122,6 @@ public class GestorErrores {
         "No se pudo crear el cliente.\nDescripción del error:\n",//28
         "No se pudo borrar el cliente.\nDescripción del error:\n",//29
 
-        
         //Mensajes de borrado
         "",//30
         "",//31
@@ -130,6 +138,5 @@ public class GestorErrores {
         "Al borrar un artículo, se borrarán también todas las líneas de factura donde dicho artículo aparezca.\n"
         + "Este proceso es irreversible. ¿Está seguro de querer borrar el artículo?",//39        
         "No se pudo modificar el cliente.\nDescripción del error:\n",//40
-
     };
 }

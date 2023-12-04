@@ -2,18 +2,25 @@ package vistas;
 
 import controladores.ArticulosJpaController;
 import controladores.FamiliasJpaController;
+import controladores.GestorErrores;
+import controladores.GestorInformacion;
 import controladores.Herramientas;
+import controladores.exceptions.IllegalOrphanException;
+import controladores.exceptions.NonexistentEntityException;
+import controladores.exceptions.PreexistingEntityException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
+import static controladores.GestorInformacion.panelBorradoFamilia;
 import javax.swing.table.DefaultTableModel;
 import modelos.Articulos;
 import modelos.Facturas;
@@ -27,8 +34,10 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private DefaultTableModel dtmFamilia;
     private List<Familias> listaFamilias;
     private Familias familiaEnFoco;
+    private JTextField[] inputsFamilia;
 
     private DefaultTableModel dtmArticulo;
+    private JTextField[] inputsArticulo;
 
     public FamiliaJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -48,6 +57,8 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         this.jtFamilia.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.jtArticulo.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.familiaEnFoco = null;
+        this.inputsFamilia = new JTextField[]{jtfCodigoFamilia, jtfNombreFamilia};
+        this.inputsArticulo = new JTextField[]{jtfCodigoArticulo, jtfFamiliaArticulo, jtfNombreArticulo};
         actualizarTablas();
         this.jtFamilia.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -385,15 +396,112 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbCrearFamiliaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearFamiliaActionPerformed
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsFamilia, GestorErrores.mensajesInputsVaciosFamilia);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            try {
+                //Inicio la creación de la nueva familia
+                ctrlFamilias.create(new Familias(jtfCodigoFamilia.getText(), jtfNombreFamilia.getText()));
+            } catch (PreexistingEntityException pe) {
+                //Si la familia ya existe, se recoge el error.
+                errores.add(pe.getMessage());
+                GestorErrores.cambiarABordeError(jtfCodigoFamilia);
+            } catch (Exception ex) {
+                //Cualquier otro error, será recogido
+                errores.add(ex.getMessage());
+            }
+        }
 
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la creación, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbCrearFamiliaActionPerformed
 
     private void jbModificarFamiliaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarFamiliaActionPerformed
-
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsFamilia, GestorErrores.mensajesInputsVaciosFamilia);
+        //Inicio la modificación de la familia trayendo de la base de datos un objeto familia con el identificador aportado por el usuario
+        Familias familia = ctrlFamilias.findFamilias(jtfCodigoFamilia.getText());
+        //Si la familia exite, se modificarán los atributos, de lo contrario, se generará error.
+        if (familia != null) {
+            familia.setNomfamilia(jtfNombreFamilia.getText());
+        } else {
+            errores.add(GestorErrores.mensajes[18]);
+        }
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            try {
+                //inicio la actualización de la familia sobre la base de datos
+                ctrlFamilias.edit(familia);
+            } catch (IllegalOrphanException io) {
+                //Si la familia que voy a modificar no contiene al menos los mismos artículos que la familia que se encuentra en la base de datos,
+                //no se podrá actualizar, ya que los artículos que no estarían contenidos en la familia que estoy editando quedarían sin familia, y familia
+                //es un atributo not null. Aunque en este punto yo no estoy cambiando ningún artículo, es posible que otro usuario de la base de 
+                //datos sí lo haya hecho mientras yo manipulo la familia, y esto podría disparar esta excepción.
+                errores.add(String.join("\n", io.getMessages()));
+            } catch (NonexistentEntityException ne) {
+                //Si la familia que se pretende actualizar no existe, se genera el error.
+                errores.add(ne.getMessage());
+            } catch (Exception ex) {
+                //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                errores.add(ex.getMessage());
+            }
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la modificación, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbModificarFamiliaActionPerformed
 
     private void jbBorrarFamiliaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarFamiliaActionPerformed
-
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(new JTextField[]{jtfCodigoFamilia}, GestorErrores.mensajesInputsVaciosFamilia);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            try {
+                //Inicio el borrado de la familia. Si no hay artículos asociados a la familia, se borra directamente.
+                ctrlFamilias.destroy(jtfCodigoFamilia.getText());
+            } catch (IllegalOrphanException io) {
+                //Si la familia que se va a borrar es la familia de algún artículo, no podrá ser borrada de manera implícita con el destroy, produciendo esta excepción.
+                //En tal caso, le pregunto al usuario si realmente quiere borrar la familia con borrado en cascada de artículos y lineas de facturas donde apareza el artículo.               
+                int opcion = JOptionPane.showOptionDialog(this, panelBorradoFamilia[0], panelBorradoFamilia[1],
+                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                        new Object[]{panelBorradoFamilia[2], panelBorradoFamilia[3], panelBorradoFamilia[4]}, panelBorradoFamilia[2]);
+                if (opcion == 1) {
+                    try {
+                        //Si el usuario acepta, procedo con el borrado en cascada, el cual he implementado a través de una función
+                        //creada por mí llamada destroyEnCascada().
+                        ctrlFamilias.destroyEnCascada(jtfCodigoFamilia.getText());
+                    } catch (NonexistentEntityException nec) {
+                        //Aunque acabo de comprobar en el paso anterior si la familia existía,
+                        //debo veriricarlo también en este punto, ya que el usuario debe aceptar el
+                        //borrado mediante un JOptionPane y eso puede demorar un tiempo                        
+                        errores.add(nec.getMessage());
+                    }
+                }
+            } catch (NonexistentEntityException ne) {
+                //Si la familia que se pretende borrar no existe, se informará y se detendrá el proceso.
+                errores.add(ne.getMessage());
+            } catch (Exception ex) {
+                //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                errores.add(ex.getMessage());
+            }
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras el borrado, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbBorrarFamiliaActionPerformed
 
     private void jbActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbActualizarActionPerformed
@@ -401,7 +509,38 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbCrearArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearArticuloActionPerformed
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsArticulo, GestorErrores.mensajesInputsVaciosArticulos);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Obtenemos la referencia a la familia que se va a asociar con el artículo
+            Familias familia = ctrlFamilias.findFamilias(jtfFamiliaArticulo.getText());
+            if (familia != null) {
+                //Si el código de familia aportado por el usuario existe, se asociará al artículo, de lo contrario, se recoge  de error y no se creará el artículo
+                try {
+                    //Inicio la creación del artículo
+                    ctrlArticulos.create(new Articulos(jtfCodigoArticulo.getText(), jtfNombreArticulo.getText(), familia));
+                } catch (PreexistingEntityException pe) {
+                    //Si el artículo ya existe, se recoge el error.
+                    errores.add(pe.getMessage());
+                    GestorErrores.cambiarABordeError(jtfCodigoArticulo);
+                } catch (Exception ex) {
+                    //Cualquier otro error, será recogido
+                    errores.add(ex.getMessage());
+                }
+            } else {
+                errores.add(GestorErrores.mensajes[18]);
+                GestorErrores.cambiarABordeError(jtfFamiliaArticulo);
+            }
+        }
 
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la creación, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbCrearArticuloActionPerformed
 
     private void jbModificarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarArticuloActionPerformed

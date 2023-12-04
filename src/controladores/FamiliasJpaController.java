@@ -78,7 +78,9 @@ public class FamiliasJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+
             Familias persistentFamilias = em.find(Familias.class, familias.getCodfamilia());
+
             Collection<Articulos> articulosCollectionOld = persistentFamilias.getArticulosCollection();
             Collection<Articulos> articulosCollectionNew = familias.getArticulosCollection();
             List<String> illegalOrphanMessages = null;
@@ -90,6 +92,7 @@ public class FamiliasJpaController implements Serializable {
                     illegalOrphanMessages.add("You must retain Articulos " + articulosCollectionOldArticulos + " since its codfamilia field is not nullable.");
                 }
             }
+
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
@@ -161,6 +164,32 @@ public class FamiliasJpaController implements Serializable {
         }
     }
 
+    public void destroyEnCascada(String id) throws NonexistentEntityException {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            Familias familias;
+            try {
+                familias = em.getReference(Familias.class, id);
+                familias.getCodfamilia();
+            } catch (EntityNotFoundException enfe) {
+                throw new NonexistentEntityException("The familias with id " + id + " no longer exists.", enfe);
+            }
+            //Para borrar la familia, primero necesito borrar los artículos que contiene
+            Collection<Articulos> articulosEnFamilia = familias.getArticulosCollection();
+            for (Articulos articulos : articulosEnFamilia) {
+                em.remove(articulos);
+            }
+            em.remove(familias);
+            em.getTransaction().commit();
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    }
+
     public List<Familias> findFamiliasEntities() {
         return findFamiliasEntities(true, -1, -1);
     }
@@ -206,5 +235,5 @@ public class FamiliasJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

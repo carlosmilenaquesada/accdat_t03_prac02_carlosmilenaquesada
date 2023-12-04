@@ -13,8 +13,14 @@ public class GestorInformacion {
 
     public static String[] panelBorradoCliente = new String[]{
         "Se encontraron facturas asociadas al cliente que pretende borrar, si continúa, se borrarán"
-            + " también dichas facturas y líneas de factura.\n"
+        + " también dichas facturas y líneas de factura.\n"
         + "Este proceso es irreversible. ¿Está seguro de querer continuar?",
         "Borrado de cliente", "NO BORRAR NADA", "BORRAR CLIENTE, FACTURAS ASOCIADAS Y LÍNEAS DE FACTURA ", "CANCELAR"};
+
+    public static String[] panelBorradoFamilia = new String[]{
+        "Se encontraron artículos asociados la familia que pretende borrar, si continúa, se borrarán"
+        + " también dichos artículos y líneas de factura donde estén presentes los artículos.\n"
+        + "Este proceso es irreversible. ¿Está seguro de querer continuar?",
+        "Borrado de familia", "NO BORRAR NADA", "BORRAR FAMILIA, ARTÍCULOS ASOCIADOS Y LÍNEAS DE FACTURA DE LOS ARTÍCULOS", "CANCELAR"};
 
 }

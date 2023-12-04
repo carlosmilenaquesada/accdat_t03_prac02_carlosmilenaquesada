@@ -272,7 +272,7 @@ public class ClienteJDialog extends javax.swing.JDialog {
         //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
         if (errores.isEmpty()) {
             try {
-                //Inicio el borrado del cliente
+                //Inicio el borrado del cliente. Si no hay facturas asociadas al cliente, se borra directamente
                 ctrlClientes.destroy(jtfCodigo.getText());
             } catch (IllegalOrphanException io) {
                 //Si el cliente que se va a borrar está presente en alguna factura, no podrá ser borrado de manera implícita con el destroy, produciendo esta excepción.

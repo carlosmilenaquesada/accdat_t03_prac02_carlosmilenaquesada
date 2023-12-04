@@ -177,7 +177,7 @@ public class ClientesJpaController implements Serializable {
             for (Facturas factura : facturasDelCliente) {                
                 em.remove(factura);
             }
-            clientes.getFacturasCollection().clear();
+            //clientes.getFacturasCollection().clear();
             em.remove(clientes);            
             em.getTransaction().commit();
         } finally {
