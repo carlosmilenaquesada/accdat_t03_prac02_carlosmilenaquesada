@@ -55,6 +55,14 @@ public class Facturas implements Serializable {
     public Facturas(Long numfactura) {
         this.numfactura = numfactura;
     }
+    
+    //Constructor creado por mí
+    public Facturas(Long numfactura, Date fechafactura, Clientes codcliente) {
+        this.numfactura = numfactura;
+        this.fechafactura = fechafactura;
+        this.codcliente = codcliente;
+    }
+    
 
     public Long getNumfactura() {
         return numfactura;

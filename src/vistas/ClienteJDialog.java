@@ -288,7 +288,8 @@ public class ClienteJDialog extends javax.swing.JDialog {
                     } catch (NonexistentEntityException nec) {
                         //Aunque acabo de comprobar en el paso anterior si el cliente existía,
                         //debo veriricarlo también en este punto, ya que el usuario debe aceptar el
-                        //borrado mediante un JOptionPane y eso puede demorar un tiempo                        
+                        //borrado mediante un JOptionPane y eso puede demorar un tiempo en el cual otro usuario de la base de datos
+                        //podría haber borrado el cliente.                
                         errores.add(nec.getMessage());
                     }
                 }

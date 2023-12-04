@@ -3,22 +3,27 @@ package vistas;
 import controladores.ArticulosJpaController;
 import controladores.ClientesJpaController;
 import controladores.FacturasJpaController;
+import controladores.GestorErrores;
 import controladores.Herramientas;
 import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import javax.swing.table.DefaultTableModel;
 import modelos.Articulos;
+import modelos.Clientes;
 import modelos.Facturas;
 
 public class FacturaJDialog extends javax.swing.JDialog {
@@ -30,8 +35,10 @@ public class FacturaJDialog extends javax.swing.JDialog {
     private DefaultTableModel dtmFactura;
     private List<Facturas> listaFacturas;
     private Facturas facturaEnFoco;
+    private JTextField[] inputsFactura;
 
     private DefaultTableModel dtmLineaFactura;
+    private JTextField[] inputsLineaFactura;
 
     public FacturaJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -52,6 +59,8 @@ public class FacturaJDialog extends javax.swing.JDialog {
         this.jtFactura.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.jtLineaFactura.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.facturaEnFoco = null;
+        this.inputsFactura = new JTextField[]{jtfNumeroFactura, jtfFechaFactura, jtfCodigoCliente};
+        this.inputsLineaFactura = new JTextField[]{jtfNumeroFacturaLinea, jtfCodigoArticuloLinea};
         actualizarTablas();
         this.jtFactura.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -94,8 +103,8 @@ public class FacturaJDialog extends javax.swing.JDialog {
         }
         facturaEnFoco = null;
         jtfNumeroFactura.setText("");
-        jtfCodigoCliente.setText("");
         jtfFechaFactura.setText("");
+        jtfCodigoCliente.setText("");
         actualizarTablaLineaFacturas();
     }
 
@@ -372,48 +381,59 @@ public class FacturaJDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jbCrearFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearFacturaActionPerformed
-        //Compruebo que código de factura que pretendo crear no esté vacío
-        if (jtfNumeroFactura.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[0], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Compruebo que el código de cliente porporcionado para asociarlo a la factura no esté vacío (ya que es un atributo no nulleable)
-        if (jtfCodigoCliente.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[26], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        try {
-            //Inicio la creación de la nueva factura, a la que le asigno el número de factura y el resto de atributos
-            Facturas factura = new Facturas(Long.valueOf(jtfNumeroFactura.getText()));
-            factura.setFechafactura(Herramientas.stringADateFormateado(jtfFechaFactura.getText()));
-            factura.setArticulosCollection(null);
-            factura.setCodcliente(ctrlClientes.findClientes(jtfCodigoCliente.getText()));
-            //Si el código de cliente proporcionado no corresponde con ningún cliente, 'findClientes' devuelve null, así que informamos y detenemos le proceso (el campo cliente de la factura no puede ser null)
-            if (factura.getCodcliente() == null) {
-                JOptionPane.showMessageDialog(null, Herramientas.mensajes[3], "Error", JOptionPane.ERROR_MESSAGE, null);
-                return;
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsFactura, GestorErrores.mensajesInputsVaciosFactura);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar        
+        if (errores.isEmpty()) {
+            //Comprobamos que el número de factura y la fecha de factura tengan un formato válido (compruebo de manera independiente
+            //cada uno para informar de los dos errores por separado) y también que el cliente porporcionado exista.
+            Long numeroFactura = null;
+            Date fechaFactura = null;
+            Clientes cliente = null;
+            try {
+                numeroFactura = Long.valueOf(jtfNumeroFactura.getText());
+            } catch (NumberFormatException nf) {
+                //Si el número de factura no tiene un formato válido, se genera error
+                errores.add(GestorErrores.mensajes[1]);
+                GestorErrores.cambiarABordeError(jtfNumeroFactura);
             }
-            //Por último, creamos la factura
-            ctrlFacturas.create(factura);
-        } catch (NumberFormatException ex) {
-            //Si el número de factura proporcionado tiene un formato no válido, se informa y se detiene el proceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (ParseException pae) {
-            //Si la fecha de la factura no tiene un formato válido, se informa y se detiene el proceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[4], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (PreexistingEntityException pe) {
-            //Si ya existe una factura con el número de factura proporicionado, se informa y se detiene el proceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[5] + " " + pe.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de creación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[5] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+            try {
+                fechaFactura = Herramientas.stringADateFormateado(jtfFechaFactura.getText());
+            } catch (ParseException pe) {
+                //Si la fecha de factura no tiene un formato válido, se genera error
+                errores.add(GestorErrores.mensajes[4]);
+                GestorErrores.cambiarABordeError(jtfFechaFactura);
+            }
+            //Obtenemos la referencia al cliente que se va a asociar con la factura
+            cliente = ctrlClientes.findClientes(jtfCodigoCliente.getText());
+            if (cliente == null) {
+                //Si el código de cliente proporcionado no corresponde a ningún cliente, se genera error
+                errores.add(GestorErrores.mensajes[27]);
+                GestorErrores.cambiarABordeError(jtfCodigoCliente);
+            }
+            if (errores.isEmpty()) {
+                //Si no a ocurrido ningún error hasta ahora, 'errores' estará vacío y se continuará
+                try {
+                    //Inicio la creación de la factura
+                    ctrlFacturas.create(new Facturas(numeroFactura, fechaFactura, cliente));
+                } catch (PreexistingEntityException pe) {
+                    //Si la factura ya existe, se recoge el error.
+                    errores.add(pe.getMessage());
+                    GestorErrores.cambiarABordeError(jtfNumeroFactura);
+                } catch (Exception ex) {
+                    //Cualquier otro error, será recogido
+                    errores.add(ex.getMessage());
+                }
+            } 
         }
-        //Si todo ha ido bien, se actualizan las tablas de la vista
-        actualizarTablas();
+
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la creación, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbCrearFacturaActionPerformed
 
     private void jbModificarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarFacturaActionPerformed

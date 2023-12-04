@@ -3,7 +3,8 @@ package vistas;
 import controladores.ArticulosJpaController;
 import controladores.FamiliasJpaController;
 import controladores.GestorErrores;
-import controladores.GestorInformacion;
+import static controladores.GestorInformacion.panelBorradoArticulo;
+
 import controladores.Herramientas;
 import controladores.exceptions.IllegalOrphanException;
 import controladores.exceptions.NonexistentEntityException;
@@ -483,7 +484,8 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                     } catch (NonexistentEntityException nec) {
                         //Aunque acabo de comprobar en el paso anterior si la familia existía,
                         //debo veriricarlo también en este punto, ya que el usuario debe aceptar el
-                        //borrado mediante un JOptionPane y eso puede demorar un tiempo                        
+                        //borrado mediante un JOptionPane y eso puede demorar un tiempo en el cual otro usuario de la base de datos
+                        //podría haber borrado la familia.                    
                         errores.add(nec.getMessage());
                     }
                 }
@@ -544,11 +546,84 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbCrearArticuloActionPerformed
 
     private void jbModificarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarArticuloActionPerformed
-
+        //Validación de los input
+        //ArrayList<String> errores = GestorErrores.validarInput(inputsArticulo, GestorErrores.mensajesInputsVaciosArticulos);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Inicio la modificación del artículo trayendo de la base de datos el artículo que tiene el identificador aportado por el usuario
+            Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticulo.getText());
+            //También traigo una la referencia a la nueva familia aprotada por el usuario, la cual se va a asociar con el artículo
+            Familias familia = ctrlFamilias.findFamilias(jtfFamiliaArticulo.getText());
+            //Si el artículo y la familia aportadas por el usuario existen, se continúa el proceso
+            //Si el artículo no existe o la nueva familia aportada por el usuario no existe, se genera el código de error por cada elemento inexistente.
+            if (articulo == null) {
+                errores.add(GestorErrores.mensajes[41]);
+                GestorErrores.cambiarABordeError(jtfCodigoArticulo);
+            }
+            if (familia == null) {
+                errores.add(GestorErrores.mensajes[18]);
+                GestorErrores.cambiarABordeError(jtfFamiliaArticulo);
+            }
+            if (errores.isEmpty()) {
+                try {
+                    //Se asignan los nuevos valores al artículo.
+                    articulo.setCodfamilia(familia);
+                    articulo.setNomarticulo(jtfNombreArticulo.getText());
+                    //inicio la actualización del artículo sobre la base de datos
+                    ctrlArticulos.edit(articulo);
+                } catch (NonexistentEntityException ne) {
+                    //Si el artículo que se pretende actualizar no existe (puede haber sido borrado por otro usuario en la base de datos mientras se editaba), se genera el error.
+                    errores.add(ne.getMessage());
+                } catch (Exception ex) {
+                    //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                    errores.add(ex.getMessage());
+                }
+            }
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la modificación, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbModificarArticuloActionPerformed
 
     private void jbBorrarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarArticuloActionPerformed
-
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(new JTextField[]{jtfCodigoArticulo}, GestorErrores.mensajesInputsVaciosArticulos);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Si el artículo que se va a borrar está presente en alguna línea de factura, se preguntará al usuario si desea borrar el artículo y las líneas
+            //de factura asociadas al artículo
+            int opcion = JOptionPane.showOptionDialog(this, panelBorradoArticulo[0], panelBorradoArticulo[1],
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                    new Object[]{panelBorradoArticulo[2], panelBorradoArticulo[3], panelBorradoArticulo[4]}, panelBorradoArticulo[2]);
+            if (opcion == 1) {
+                try {
+                    //Si el usuario acepta, procedo con el borrado del artículo que
+                    //borrará también las líneas de factura donde aparezca el artículo. Este borrado en cascada se
+                    //lleva a cabo de manera implícita, ya que el destroy de artículo viene programado así por defecto.
+                    ctrlArticulos.destroy(jtfCodigoArticulo.getText());
+                } catch (NonexistentEntityException ne) {
+                    //Aunque acabo de comprobar en el paso anterior si el artículo existía,
+                    //debo veriricarlo también en este punto, ya que el usuario debe aceptar el
+                    //borrado mediante un JOptionPane y eso puede demorar un tiempo en el cual otro usuario de la base de datos
+                    //podría haber borrado el artículo.
+                    errores.add(ne.getMessage());
+                } catch (Exception ex) {
+                    //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                    errores.add(ex.getMessage());
+                }
+            }
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras el borrado, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbBorrarArticuloActionPerformed
 
     public static void main(String args[]) {

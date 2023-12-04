@@ -77,6 +77,11 @@ public class GestorErrores {
         "El campo de familia de artículo no puede estar vacío",//1
         "El campo de nombre de artículo no puede estar vacío"
     };
+    public static String[] mensajesInputsVaciosFactura = new String[]{
+        "El campo del número de factura no puede estar vacío",//0
+        "El campo de fecha de factura no puede estar vacío",//1
+        "El campo de código de cliente de la factura no puede estar vacío"
+    };
 
     public static String[] mensajes = new String[]{
         //FacturaJDialog
@@ -138,5 +143,9 @@ public class GestorErrores {
         "Al borrar un artículo, se borrarán también todas las líneas de factura donde dicho artículo aparezca.\n"
         + "Este proceso es irreversible. ¿Está seguro de querer borrar el artículo?",//39        
         "No se pudo modificar el cliente.\nDescripción del error:\n",//40
+        
+        
+        //NUEVOS OLVIDADOS
+        "El artículo proporcionado no existe"//41
     };
 }
