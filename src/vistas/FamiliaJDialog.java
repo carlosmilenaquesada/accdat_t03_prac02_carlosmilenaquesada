@@ -96,6 +96,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private void actualizarTablas() {
         dtmFamilia.setRowCount(0);
         this.listaFamilias = ctrlFamilias.getEntityManager().createNamedQuery("Familias.findOrderByCodfamilia").getResultList();
+        dcbmFamilias.removeAllElements();
         for (Familias f : this.listaFamilias) {
             dtmFamilia.addRow(new Object[]{f});
             dcbmFamilias.addElement(f);
