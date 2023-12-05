@@ -52,7 +52,7 @@ public class GestorErrores {
         ArrayList<String> errores = new ArrayList<>();       
         cambiarABordeDefecto(jtfLista);
         for (int i = 0; i < jtfLista.length; i++) {
-            if (jtfLista[i].getText().isEmpty()) {
+            if (jtfLista[i].getText().isEmpty()) {                
                 cambiarABordeError(jtfLista[i]);
                 errores.add(mensajesError[i]);
             }
@@ -75,13 +75,19 @@ public class GestorErrores {
     public static String[] mensajesInputsVaciosArticulos = new String[]{
         "El campo del código de artículo no puede estar vacío",//0
         "El campo de familia de artículo no puede estar vacío",//1
-        "El campo de nombre de artículo no puede estar vacío"
+        "El campo de nombre de artículo no puede estar vacío"//3
     };
     public static String[] mensajesInputsVaciosFactura = new String[]{
         "El campo del número de factura no puede estar vacío",//0
         "El campo de fecha de factura no puede estar vacío",//1
-        "El campo de código de cliente de la factura no puede estar vacío"
+        "El campo de código de cliente de la factura no puede estar vacío"//3
     };
+    
+    public static String[] mensajesInputsVaciosLineasFactura = new String[]{
+        "El campo del número de factura no puede estar vacío",//0
+        "El campo del código de artículo no puede estar vacío",//1        
+    };
+    
 
     public static String[] mensajes = new String[]{
         //FacturaJDialog
@@ -146,6 +152,6 @@ public class GestorErrores {
         
         
         //NUEVOS OLVIDADOS
-        "El artículo proporcionado no existe"//41
+        "El artículo proporcionado no existe."//41
     };
 }

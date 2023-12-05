@@ -29,4 +29,10 @@ public class GestorInformacion {
         + "Este proceso es irreversible. ¿Está seguro de querer continuar?",
         "Borrado de artículo", "NO BORRAR NADA", "BORRAR ARTÍCULO Y LÍNEAS DE FACTURA DEL ARTÍCULO", "CANCELAR"};
 
+    public static String[] panelBorradoFacturas = new String[]{
+        "Se encontraron líneas de factura en la factura que se pretende borrar, si continúa, dichas líneas de factura"
+        + "serán borradas también.\n"
+        + "Este proceso es irreversible. ¿Está seguro de querer continuar?",
+        "Borrado de facturas", "NO BORRAR NADA", "BORRAR FACTURAS Y LÍNEAS DE FACTURA", "CANCELAR"};
+
 }

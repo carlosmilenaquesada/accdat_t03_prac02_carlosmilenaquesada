@@ -4,6 +4,8 @@ import controladores.ArticulosJpaController;
 import controladores.ClientesJpaController;
 import controladores.FacturasJpaController;
 import controladores.GestorErrores;
+import static controladores.GestorInformacion.panelBorradoFacturas;
+
 import controladores.Herramientas;
 import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
@@ -12,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
@@ -406,6 +405,7 @@ public class FacturaJDialog extends javax.swing.JDialog {
             }
             //Obtenemos la referencia al cliente que se va a asociar con la factura
             cliente = ctrlClientes.findClientes(jtfCodigoCliente.getText());
+
             if (cliente == null) {
                 //Si el código de cliente proporcionado no corresponde a ningún cliente, se genera error
                 errores.add(GestorErrores.mensajes[27]);
@@ -424,7 +424,7 @@ public class FacturaJDialog extends javax.swing.JDialog {
                     //Cualquier otro error, será recogido
                     errores.add(ex.getMessage());
                 }
-            } 
+            }
         }
 
         if (errores.isEmpty()) {
@@ -437,91 +437,111 @@ public class FacturaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbCrearFacturaActionPerformed
 
     private void jbModificarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarFacturaActionPerformed
-        //Compruebo que número de factura que pretendo modificar no esté vacío
-        if (jtfNumeroFactura.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[0], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Compruebo que el código de cliente porporcionado para asociarlo a la factura que se va a modificar no esté vacío (ya que es un atributo no nulleable)
-        if (jtfCodigoCliente.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[26], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Inicio la modificación de la factura
-        try {
-            Facturas factura = ctrlFacturas.findFacturas(Long.valueOf(jtfNumeroFactura.getText()));
-            //Si el código de factura proporcionado no corresponde con ninguna factura, 'findFacturas' devuelve null, así que informamos y detenemos le proceso
-            if (factura == null) {
-                JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
-                return;
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsFactura, GestorErrores.mensajesInputsVaciosFactura);
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Obtengo los nuevos datos de la modificación (numeroFactura es la pk y no se va a modificar, simplemente lo obtengo para 
+            //saber cual es la factura que voy a modificar)
+            Long numeroFactura = null;
+            Date fechaFactura = null;
+            Clientes cliente = null;
+            try {
+                numeroFactura = Long.valueOf(jtfNumeroFactura.getText());
+            } catch (NumberFormatException nf) {
+                //Si el número de factura no tiene un formato válido, se genera error
+                errores.add(GestorErrores.mensajes[1]);
+                GestorErrores.cambiarABordeError(jtfNumeroFactura);
             }
-            //Añadimos el resto de atributos modificados
-            factura.setFechafactura(Herramientas.stringADateFormateado(jtfFechaFactura.getText()));
-            factura.setCodcliente(ctrlClientes.findClientes(jtfCodigoCliente.getText()));
-            //Si el código de cliente proporcionado en la modificación no corresponde con ningún cliente, 'findClientes' devuelve null, así que informamos y detenemos le proceso (el campo cliente de la factura no puede quedar null)
-            if (factura.getCodcliente() == null) {
-                JOptionPane.showMessageDialog(null, Herramientas.mensajes[3], "Error", JOptionPane.ERROR_MESSAGE, null);
-                return;
+            try {
+                fechaFactura = Herramientas.stringADateFormateado(jtfFechaFactura.getText());
+            } catch (ParseException pe) {
+                //Si la fecha de factura no tiene un formato válido, se genera error
+                errores.add(GestorErrores.mensajes[4]);
+                GestorErrores.cambiarABordeError(jtfFechaFactura);
             }
-            //Por último, actualizamos los campos modificados en la factura       
-            ctrlFacturas.edit(factura);
-        } catch (NumberFormatException nf) {
-            //Si el número de factura proporcionado tiene un formato no válido, se informa y se detiene el proceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (ParseException ex) {
-            //Si la fecha de la factura no tiene un formato válido, se informa y se detiene el proceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[4], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (NonexistentEntityException nee) {
-            //Aunque en el 'findFacturas' usado en la modificación ya se comprobó si la factura existía (para continuar o no con el resto del proceso),
-            //no podemos garantizar que siga existiendo cuando se ejecuta el 'edit(factura)', por eso estoy tratando también esta excepción.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de creación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[7] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
+            //Obtenemos la referencia al nuevo cliente que se va a asociar con la factura
+            cliente = ctrlClientes.findClientes(jtfCodigoCliente.getText());
 
-        //Si todo ha ido bien, se actualizan las tablas de la vista
-        actualizarTablas();
+            if (cliente == null) {
+                //Si el código de cliente proporcionado no corresponde a ningún cliente, se genera error
+                errores.add(GestorErrores.mensajes[27]);
+                GestorErrores.cambiarABordeError(jtfCodigoCliente);
+            }
+
+            if (errores.isEmpty()) {
+                //Si no a ocurrido ningún error en la recopilación de datos, podemos continuar                           
+                try {
+                    //Obtenemos la referencia a la factura. Podríamos hacer un new factura en este punto, pero eso produce un problemar al actualizar la factura porque esa
+                    //new factura carecería de contenido en su colección interna de artículos, y eso borraría todas las líneas de factura asociadas al actualizar.
+                    Facturas factura = ctrlFacturas.findFacturas(numeroFactura);
+                    //Se asignan los nuevos valores a la factura
+                    factura.setFechafactura(fechaFactura);
+                    factura.setCodcliente(cliente);
+                    //inicio la actualización del artículo sobre la base de datos
+                    ctrlFacturas.edit(factura);
+                } catch (NonexistentEntityException ne) {
+                    //Si la factura que se pretende actualizar no existe (puede haber sido borrado por otro usuario en la base de datos mientras se editaba), se genera el error.
+                    errores.add(ne.getMessage());
+                } catch (Exception ex) {
+                    //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                    errores.add(ex.getMessage());
+                }
+            }
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras la modificación, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
 
     }//GEN-LAST:event_jbModificarFacturaActionPerformed
 
     private void jbBorrarFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarFacturaActionPerformed
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(new JTextField[]{jtfNumeroFactura}, GestorErrores.mensajesInputsVaciosFactura);
+        Long numeroFactura = null;
         try {
-            ctrlFacturas.destroy(Long.valueOf(jtfNumeroFactura.getText()));
-            /*//Compruebo que número de factura que pretendo borrar no esté vacío
-            if (jtfNumeroFactura.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[0], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+            numeroFactura = Long.valueOf(jtfNumeroFactura.getText());
+        } catch (NumberFormatException nf) {
+            //Si el número de factura proporcionado por el usuario no tiene un formato válido, se informa y se emite el error
+            errores.add(GestorErrores.mensajes[1]);
+            GestorErrores.cambiarABordeError(jtfNumeroFactura);
+        }
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Si la factura que se va a borrar tiene alguna línea de factura asociada, se preguntará al usuario si desea borrar la factura y las líneas
+            //de factura asociadas a la factura
+            int opcion = JOptionPane.showOptionDialog(this, panelBorradoFacturas[0], panelBorradoFacturas[1],
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
+                    new Object[]{panelBorradoFacturas[2], panelBorradoFacturas[3], panelBorradoFacturas[4]}, panelBorradoFacturas[2]);
+            if (opcion == 1) {
+                try {
+                    //Si el usuario acepta, procedo con el borrado de la factura que
+                    //borrará también las líneas de factura donde dicha factura. Este borrado en cascada se
+                    //lleva a cabo de manera implícita, ya que el destroy de factura viene programado así por defecto.
+                    ctrlFacturas.destroy(numeroFactura);
+                } catch (NonexistentEntityException ne) {
+                    //Aunque acabo de comprobar en el paso anterior si la factura existía,
+                    //debo veriricarlo también en este punto, ya que el usuario debe aceptar el
+                    //borrado mediante un JOptionPane y eso puede demorar un tiempo en el cual otro usuario de la base de datos
+                    //podría haber borrado la factura
+                    errores.add(ne.getMessage());
+                    GestorErrores.cambiarABordeError(jtfNumeroFactura);
+                } catch (Exception ex) {
+                    //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                    errores.add(ex.getMessage());
+                }
             }
-            //Pregunto al usuario si realmente desea borrar la factura e informo de las cosecuencias (se borran las líneas de factura asociadas a la factura), antes de continuar con el proceso
-            int opcion = JOptionPane.showOptionDialog(this, Herramientas.mensajes[33], Herramientas.mensajes[32],
-            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, new Object[]{"NO BORRAR NADA", "BORRAR FACTURA Y LÍNEAS DE FACTURA", "CANCELAR"}, "NO BORRAR NADA");
-            if (opcion != 1) {
-            return;
-            }
-            try {
-            ctrlFacturas.destroy(Long.valueOf(jtfNumeroFactura.getText()));
-            } catch (NumberFormatException ex) {
-            //Si el código de factura no tiene un formato válido, se informa y se detiene el proceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-            } catch (NonexistentEntityException ex) {
-            //Si el código de factura proporcionado no corresponde con ninguna factura, se informa y se detiene el porceso
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6] + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-            } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de creación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[8] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-            }
-            //Si todo ha ido bien, se actualizan las tablas de la vista
-            actualizarTablas();*/
-        } catch (NonexistentEntityException ex) {
-            Logger.getLogger(FacturaJDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras el borrado, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
         }
     }//GEN-LAST:event_jbBorrarFacturaActionPerformed
 
@@ -530,98 +550,116 @@ public class FacturaJDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_jbActualizarActionPerformed
 
     private void jbCrearLineaFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbCrearLineaFacturaActionPerformed
-        //Compruebo que el código de artículo y número de factura proporcionados no estén vacíos
-        if (jtfCodigoArticuloLinea.getText().isEmpty() || jtfNumeroFacturaLinea.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[9], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Obtengo la factura con el número de factura porporcionado por el usuario
-        Facturas factura;
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsLineaFactura, GestorErrores.mensajesInputsVaciosLineasFactura);
+        Long numeroFactura = null;
         try {
-            //Si el código de la factura proporcionada por el usuario no tiene un formato apropiado, se informa y se detiene el proceso
-            factura = ctrlFacturas.findFacturas(Long.valueOf(jtfNumeroFacturaLinea.getText()));
+            numeroFactura = Long.valueOf(jtfNumeroFacturaLinea.getText());
         } catch (NumberFormatException nf) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+            //Si el número de factura proporcionado por el usuario no tiene un formato válido, se informa y se emite el error
+            errores.add(GestorErrores.mensajes[1]);
+            GestorErrores.cambiarABordeError(jtfNumeroFacturaLinea);
         }
-        //Si la factura es null, es que no existe tal factura, por lo tanto detengo el proceso e informo
-        if (factura == null) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Obtengo el artículo con el codigo proporcionado por el usuario, y lo inserto en la colección de artículos de la factura       
-        Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticuloLinea.getText());
-        //Si el artículo es null, es que no existe tal artículo, por lo tanto detengo el proceso e informo
-        if (articulo == null) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[10], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Si la factura y el artículo existen, agrego el artículo a la colección de artículos de la factura, y la actualizo (aunque es una relación
-        //de muchos-muchos, no es necesario agregar la factura a la colección de facturas del artículo, ya que este proceso se realiza en el controlador de facturas
-        //o en el de artículos de manera implícita, según quien inicie el proceso de agregar)
-        factura.getArticulosCollection().add(articulo);
-        try {
-            //Actualizo la factura, en la que se ha incluido el artículo, como consecuencia, se crea la línea de factura cuya pk es factura+articulo
-            ctrlFacturas.edit(factura);
-        } catch (NonexistentEntityException ne) {
-            //Aunque anteriormente he comprobado que la factura existía, no está de más manejar esta excepción, ya que en este punto puede haber dejado de existir
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de creación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[12] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Si todo ha ido bien, se actualizan las tablas de la vista
-        actualizarTablas();
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Obtenemos la factura y el artículo involucrados en la línea de factura
+            Facturas factura = ctrlFacturas.findFacturas(numeroFactura);
+            Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticuloLinea.getText());
 
+            //Si la factura es null, es que no existe tal factura, así que se informa
+            if (factura == null) {
+                errores.add(GestorErrores.mensajes[6]);
+                GestorErrores.cambiarABordeError(jtfNumeroFacturaLinea);
+            }
+            //Si el artículo es null, es que no existe tal artículo, así que se informa
+            if (articulo == null) {
+                errores.add(GestorErrores.mensajes[41]);
+                GestorErrores.cambiarABordeError(jtfCodigoArticuloLinea);
+            }
+            if (errores.isEmpty()) {
+                //Si la factura y el artículo existen, agrego el artículo a la colección de artículos de la factura, y la actualizo (aunque es una relación
+                //de muchos-muchos, solo hay que agregar en una dirección, no es necesario agregar la factura a la colección de facturas del artículo, 
+                //ya que este proceso se realiza en el controlador de facturas o en el de artículos de manera implícita, según quien inicie el proceso de agregar)
+                if (!factura.getArticulosCollection().contains(articulo)) {
+                    factura.getArticulosCollection().add(articulo);
+                }
+                try {
+                    //Actualizo la factura, en la que se ha incluido el artículo, como consecuencia, se crea la línea de factura cuya pk es numerofactura+codigoarticulo
+                    ctrlFacturas.edit(factura);
+                } catch (NonexistentEntityException ne) {
+                    //Si la factura dejó de existir durante este proceso de creación de línea, se emite mensaje de factura no existente.
+                    //Por el contrario, si el artículo dejó de existir durante el proceso, simplemente no se generará la línea nueva.
+                    errores.add(GestorErrores.mensajes[6]);
+                    GestorErrores.cambiarABordeError(jtfNumeroFacturaLinea);
+                } catch (Exception ex) {
+                    //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                    errores.add(ex.getMessage());
+                }
+            }
+        }
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras el borrado, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
+        }
     }//GEN-LAST:event_jbCrearLineaFacturaActionPerformed
 
     private void jbBorrarLineaFacturaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbBorrarLineaFacturaActionPerformed
-        //Compruebo que el código de artículo y número de factura proporcionados no estén vacíos
-        if (jtfCodigoArticuloLinea.getText().isEmpty() || jtfNumeroFacturaLinea.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[9], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Obtengo la factura con el número de factura porporcionado por el usuario
-        Facturas factura;
+        //Validación de los input
+        ArrayList<String> errores = GestorErrores.validarInput(inputsLineaFactura, GestorErrores.mensajesInputsVaciosLineasFactura);
+        Long numeroFactura = null;
         try {
-            //Si el código de la factura proporcionada por el usuario no tiene un formato apropiado, se informa y se detiene el proceso
-            factura = ctrlFacturas.findFacturas(Long.valueOf(jtfNumeroFacturaLinea.getText()));
+            numeroFactura = Long.valueOf(jtfNumeroFacturaLinea.getText());
         } catch (NumberFormatException nf) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[1], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+            //Si el número de factura proporcionado por el usuario no tiene un formato válido, se informa y se emite el error
+            errores.add(GestorErrores.mensajes[1]);
+            GestorErrores.cambiarABordeError(jtfNumeroFacturaLinea);
         }
-        //Si la factura es null, es que no existe tal factura, por lo tanto detengo el proceso e informo
-        if (factura == null) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+        //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (errores.isEmpty()) {
+            //Obtenemos la factura y el artículo involucrados en la línea de factura
+            Facturas factura = ctrlFacturas.findFacturas(numeroFactura);
+            Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticuloLinea.getText());
+
+            //Si la factura es null, es que no existe tal factura, así que se informa
+            if (factura == null) {
+                errores.add(GestorErrores.mensajes[6]);
+                GestorErrores.cambiarABordeError(jtfNumeroFacturaLinea);
+            }
+            //Si el artículo es null, es que no existe tal artículo, así que se informa
+            if (articulo == null) {
+                errores.add(GestorErrores.mensajes[41]);
+                GestorErrores.cambiarABordeError(jtfCodigoArticuloLinea);
+            }
+            if (errores.isEmpty()) {
+                //Si la factura y el artículo existen, elimino el artículo de la colección de artículos de la factura, y la actualizo (aunque es una relación
+                //de muchos-muchos, solo hay que eliminar en una dirección, no es necesario eliminar la factura de la colección de facturas del artículo, 
+                //ya que este proceso se realiza en el controlador de facturas o en el de artículos de manera implícita, según quien inicie el proceso de agregar)
+                if (factura.getArticulosCollection().contains(articulo)) {
+                    factura.getArticulosCollection().remove(articulo);
+                }
+                try {
+                    //Actualizo la factura, en la que se ha eliminado el artículo, como consecuencia, se elimina línea de factura cuya pk es numerofactura+codigoarticulo
+                    ctrlFacturas.edit(factura);
+                } catch (NonexistentEntityException ne) {
+                    //Si la factura dejó de existir durante este proceso de eliminación de línea, se emite mensaje de factura no existente.
+                    errores.add(GestorErrores.mensajes[6]);
+                    GestorErrores.cambiarABordeError(jtfNumeroFacturaLinea);
+                } catch (Exception ex) {
+                    //Cualquier otro error, se informará y detendrá el proceso de modificación.
+                    errores.add(ex.getMessage());
+                }
+            }
         }
-        //Obtengo el artículo con el codigo proporcionado por el usuario, y lo inserto en la colección de artículos de la factura       
-        Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticuloLinea.getText());
-        //Si el artículo es null, es que no existe tal artículo, por lo tanto detengo el proceso e informo
-        if (articulo == null) {
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[10], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
+        if (errores.isEmpty()) {
+            //Si 'errores' sigue vacío tras el borrado, se actualiza la tabla de la vista
+            actualizarTablas();
+        } else {
+            //Si hay errores, los muestro y finalizo
+            GestorErrores.mostrarErrores(errores);
         }
-        //Si la factura y el artículo existen, elimino el artículo de la colección de artículos de la factura, y la actualizo (aunque es una relación
-        //de muchos-muchos, no es necesario eliminar la factura de la colección de facturas del artículo, ya que este proceso se realiza en el controlador de facturas
-        //o en el de artículos de manera implícita, según quien inicie el proceso de borrado)
-        factura.getArticulosCollection().remove(articulo);
-        try {
-            //Actualizo la factura, en la que ya no está el artículo, como consecuencia, se elimina la línea de factura cuya pk es factura+articulo
-            ctrlFacturas.edit(factura);
-        } catch (NonexistentEntityException ne) {
-            //Aunque anteriormente he comprobado que la factura existía, no está de más manejar esta excepción, ya que en este punto puede haber dejado de existir
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[6], "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        } catch (Exception ex) {
-            //Cualquier otro error, se informará y detendrá el proceso de creación.
-            JOptionPane.showMessageDialog(null, Herramientas.mensajes[12] + " " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE, null);
-            return;
-        }
-        //Si todo ha ido bien, se actualizan las tablas de la vista
-        actualizarTablas();
     }//GEN-LAST:event_jbBorrarLineaFacturaActionPerformed
 
     public static void main(String args[]) {

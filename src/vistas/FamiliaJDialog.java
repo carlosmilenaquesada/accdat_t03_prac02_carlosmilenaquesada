@@ -547,7 +547,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
 
     private void jbModificarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarArticuloActionPerformed
         //Validación de los input
-        //ArrayList<String> errores = GestorErrores.validarInput(inputsArticulo, GestorErrores.mensajesInputsVaciosArticulos);
+        ArrayList<String> errores = GestorErrores.validarInput(inputsArticulo, GestorErrores.mensajesInputsVaciosArticulos);
         //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
         if (errores.isEmpty()) {
             //Inicio la modificación del artículo trayendo de la base de datos el artículo que tiene el identificador aportado por el usuario
