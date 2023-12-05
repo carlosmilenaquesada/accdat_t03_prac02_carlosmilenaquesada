@@ -2,7 +2,6 @@ package controladores;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
@@ -78,9 +77,8 @@ public class GestorErrores {
         "El campo de nombre de artículo no puede estar vacío"//3
     };
     public static String[] mensajesInputsVaciosFactura = new String[]{
-        "El campo del número de factura no puede estar vacío",//0
-        "El campo de fecha de factura no puede estar vacío",//1
-        "El campo de código de cliente de la factura no puede estar vacío"//3
+        "El campo de fecha de factura no puede estar vacío",//0
+        "El campo de código de cliente de la factura no puede estar vacío"//1
     };
     
     public static String[] mensajesInputsVaciosLineasFactura = new String[]{
@@ -90,68 +88,17 @@ public class GestorErrores {
     
 
     public static String[] mensajes = new String[]{
-        //FacturaJDialog
-        //gestión de facturas
-        "Debe proporcionar un número de factura.",//0
-        "El número de factura proporcionado no tiene un formato válido.",//1
-        "No se puede crear la factura porque ya existe una factura con ese código.",//2
-        "El cliente proporcionado no existe.",//3
-        "La fecha de factura proporcionada no tiene un formato válido.",//4
-        "No se pudo crear la factura.\nDescripción del error:\n",//5
-        "No existe una factura con el número proporcionado.",//6
-        "No se pudo modificar la factura.\nDescripción del error:\n",//7
-        "No se pudo borrar la factura.\nDescripción del error:\n",//8
-
-        //gestión de líneas
-        "Debe proporcionar un código de artículo y un número de factura.",//9
-        "No existe un artículo con el código proporcionado.",//10
-        "Ya existe una línea con ese mismo artículo para la factura proporcionada",//11
-        "No se pudo crear la línea de factura.\nDescripción del error:\n",//12
-        "No existe una línea con ese artículo para la factura proporcionada",//13
-        "No se pudo borrar la línea de factura.\nDescripción del error:\n",//14
-
-        //FamiliaJDialog
-        //gestión de familias
-        "Debe proporcionar un código de familia.",//15
-        "No se puede crear la familia porque ya existe una familia con ese código.",//16
-        "No se pudo crear la familia.\nDescripción del error:\n",//17
-        "La familia proporcionada no existe.",//18
-        "No se pudo modificar la familia.\nDescripción del error:\n",//19
-        "No se pudo borrar la familia.\nDescripción del error:\n",//20
-
-        //gestión de articulos
-        "Debe proporcionar un código de artículo.",//21
-        "El precio proporcionado no tiene un formato válido.",//22
-        "No se pudo crear el artículo.\nDescripción del error:\n",//23
-        "No se pudo modificar el artículo.\nDescripción del error:\n",//24
-        "No se pudo borrar el artículo.\nDescripción del error:\n",//25
-
-        //ClientesJDialog
-        //gestión de clientes
-        "",//26
-        "El cliente proporcionado no existe.",//27
-        "No se pudo crear el cliente.\nDescripción del error:\n",//28
-        "No se pudo borrar el cliente.\nDescripción del error:\n",//29
-
-        //Mensajes de borrado
-        "",//30
-        "",//31
-        "Borrado de factura",//32
-        "Al borrar una factura, se borrarán también todas las líneas de factura asociadas a dicha factura.\n"
-        + "Este proceso es irreversible. ¿Está seguro de querer borrar la factura?",//33
-        "Borrado de línea de factura",//34
-        "El borrado de la línea es irreversible. ¿Desea continuar con el borrado?",//35
-        "Borrado de familia",//36
-        "Al borrar una familia, se borrarán también todos los artículos que pertenezcan a la familia, así "
-        + "como las líneas de factura donde dichos artículos aparezcan.\n"
-        + "Este proceso es irreversible. ¿Está seguro de querer borrar la familia?",//37
-        "Borrado de artículo",//38
-        "Al borrar un artículo, se borrarán también todas las líneas de factura donde dicho artículo aparezca.\n"
-        + "Este proceso es irreversible. ¿Está seguro de querer borrar el artículo?",//39        
-        "No se pudo modificar el cliente.\nDescripción del error:\n",//40
         
-        
-        //NUEVOS OLVIDADOS
-        "El artículo proporcionado no existe."//41
+        "El cliente proporcionado no existe.",//0
+        "No existe una factura con el número proporcionado.",//1
+        "La familia proporcionada no existe.",//2
+        "El cliente proporcionado no existe.",//3 
+        "El artículo proporcionado no existe.",//4
+        "Actualmente no existen clientes. Debe crear algún cliente antes de crear una factura.",//5
+        "Debe seleccionar una factura para iniciar su modificación o borrado.",//6 
+        "Debe seleccionar una factura para poder añadir una línea de factura",//7
+        "Debe seleccionar una línea de factura para borrar.",//8
+        "Debe seleccionar un artículo para generar una línea de factura.",//9
+        "Debe seleccionar una familia para poder crear o modificar un artículo.",//10
     };
 }

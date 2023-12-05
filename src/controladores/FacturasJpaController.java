@@ -67,7 +67,7 @@ public class FacturasJpaController implements Serializable {
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findFacturas(facturas.getNumfactura()) != null) {
-                throw new PreexistingEntityException("Facturas " + facturas + " already exists.", ex);
+                throw new PreexistingEntityException("La factura " + facturas + " ya existe.", ex);
             }
             throw ex;
         } finally {
@@ -132,7 +132,7 @@ public class FacturasJpaController implements Serializable {
             if (msg == null || msg.length() == 0) {
                 Long id = facturas.getNumfactura();
                 if (findFacturas(id) == null) {
-                    throw new NonexistentEntityException("The facturas with id " + id + " no longer exists.");
+                    throw new NonexistentEntityException("La factura con número " + id + " ya no existe.");
                 }
             }
             throw ex;
@@ -153,7 +153,7 @@ public class FacturasJpaController implements Serializable {
                 facturas = em.getReference(Facturas.class, id);
                 facturas.getNumfactura();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The facturas with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("La factura con número " + id + " ya no existe.", enfe);
             }
             Clientes codcliente = facturas.getCodcliente();
             if (codcliente != null) {

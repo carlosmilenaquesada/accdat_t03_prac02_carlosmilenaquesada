@@ -9,10 +9,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -32,7 +30,10 @@ import javax.persistence.TemporalType;
 @NamedQueries({
     @NamedQuery(name = "Facturas.findAll", query = "SELECT f FROM Facturas f")
     , @NamedQuery(name = "Facturas.findByNumfactura", query = "SELECT f FROM Facturas f WHERE f.numfactura = :numfactura")
-    , @NamedQuery(name = "Facturas.findByFechafactura", query = "SELECT f FROM Facturas f WHERE f.fechafactura = :fechafactura")})
+    , @NamedQuery(name = "Facturas.findByFechafactura", query = "SELECT f FROM Facturas f WHERE f.fechafactura = :fechafactura")
+    , @NamedQuery(name = "Facturas.findMaxNumfactura", query = "SELECT MAX(f.numfactura) FROM Facturas f")//Creada por mí
+    , @NamedQuery(name = "Facturas.findOrderByNumfactura", query = "SELECT f FROM Facturas f ORDER BY f.numfactura")//Creada por mí
+})
 public class Facturas implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,14 +56,13 @@ public class Facturas implements Serializable {
     public Facturas(Long numfactura) {
         this.numfactura = numfactura;
     }
-    
+
     //Constructor creado por mí
     public Facturas(Long numfactura, Date fechafactura, Clientes codcliente) {
         this.numfactura = numfactura;
         this.fechafactura = fechafactura;
         this.codcliente = codcliente;
     }
-    
 
     public Long getNumfactura() {
         return numfactura;

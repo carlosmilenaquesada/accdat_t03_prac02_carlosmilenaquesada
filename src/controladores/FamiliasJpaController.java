@@ -63,7 +63,7 @@ public class FamiliasJpaController implements Serializable {
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findFamilias(familias.getCodfamilia()) != null) {
-                throw new PreexistingEntityException("Familias " + familias + " already exists.", ex);
+                throw new PreexistingEntityException("La familia " + familias + " ya existe.", ex);
             }
             throw ex;
         } finally {
@@ -121,7 +121,7 @@ public class FamiliasJpaController implements Serializable {
             if (msg == null || msg.length() == 0) {
                 String id = familias.getCodfamilia();
                 if (findFamilias(id) == null) {
-                    throw new NonexistentEntityException("The familias with id " + id + " no longer exists.");
+                    throw new NonexistentEntityException("La familia con código " + id + " ya no existe.");
                 }
             }
             throw ex;
@@ -142,7 +142,7 @@ public class FamiliasJpaController implements Serializable {
                 familias = em.getReference(Familias.class, id);
                 familias.getCodfamilia();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The familias with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("La familia con código " + id + " ya no existe.", enfe);
             }
             List<String> illegalOrphanMessages = null;
             Collection<Articulos> articulosCollectionOrphanCheck = familias.getArticulosCollection();
@@ -174,7 +174,7 @@ public class FamiliasJpaController implements Serializable {
                 familias = em.getReference(Familias.class, id);
                 familias.getCodfamilia();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The familias with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("La familia con código " + id + " ya no existe.", enfe);
             }
             //Para borrar la familia, primero necesito borrar los artículos que contiene
             Collection<Articulos> articulosEnFamilia = familias.getArticulosCollection();

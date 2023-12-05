@@ -26,7 +26,9 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "Familias.findAll", query = "SELECT f FROM Familias f")
     , @NamedQuery(name = "Familias.findByCodfamilia", query = "SELECT f FROM Familias f WHERE f.codfamilia = :codfamilia")
-    , @NamedQuery(name = "Familias.findByNomfamilia", query = "SELECT f FROM Familias f WHERE f.nomfamilia = :nomfamilia")})
+    , @NamedQuery(name = "Familias.findByNomfamilia", query = "SELECT f FROM Familias f WHERE f.nomfamilia = :nomfamilia")
+    ,@NamedQuery(name = "Familias.findOrderByCodfamilia", query = "SELECT f FROM Familias f ORDER BY f.codfamilia")//Creada por mí
+})
 public class Familias implements Serializable {
 
     private static final long serialVersionUID = 1L;

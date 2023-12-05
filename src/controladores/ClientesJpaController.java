@@ -17,7 +17,6 @@ import modelos.Facturas;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import modelos.Clientes;
@@ -60,7 +59,7 @@ public class ClientesJpaController implements Serializable {
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findClientes(clientes.getCodcliente()) != null) {
-                throw new PreexistingEntityException("Clientes " + clientes + " already exists.", ex);
+                throw new PreexistingEntityException("El cliente " + clientes + " ya existe.", ex);
             }
             throw ex;
         } finally {
@@ -118,7 +117,7 @@ public class ClientesJpaController implements Serializable {
             if (msg == null || msg.length() == 0) {
                 String id = clientes.getCodcliente();
                 if (findClientes(id) == null) {
-                    throw new NonexistentEntityException("The clientes with id " + id + " no longer exists.");
+                    throw new NonexistentEntityException("El cliente con código " + id + " ya no existe.");
                 }
             }
             throw ex;
@@ -139,7 +138,7 @@ public class ClientesJpaController implements Serializable {
                 clientes = em.getReference(Clientes.class, id);
                 clientes.getCodcliente();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The clientes with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("El cliente con código " + id + " ya no existe.", enfe);
             }
             List<String> illegalOrphanMessages = null;
             Collection<Facturas> facturasCollectionOrphanCheck = clientes.getFacturasCollection();
@@ -171,7 +170,7 @@ public class ClientesJpaController implements Serializable {
                 clientes = em.getReference(Clientes.class, id);
                 clientes.getCodcliente();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The clientes with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("El cliente con código " + id + " ya no existe.", enfe);
             }   
             Collection<Facturas> facturasDelCliente = clientes.getFacturasCollection();
             for (Facturas factura : facturasDelCliente) {                

@@ -5,10 +5,10 @@
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" value="Gesti&#xf3;n de familias"/>
     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[684, 664]"/>
+      <Dimension value="[425, 582]"/>
     </Property>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="[684, 664]"/>
+      <Dimension value="[425, 582]"/>
     </Property>
     <Property name="resizable" type="boolean" value="false"/>
   </Properties>
@@ -31,16 +31,19 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jpArticulo" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="jpArticulo" min="-2" max="-2" attributes="0"/>
+                  <Component id="jbActualizar" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Component id="jpFamilia" max="32767" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="jpFamilia" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="11" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -48,21 +51,31 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace min="-2" pref="320" max="-2" attributes="0"/>
-              <Component id="jpArticulo" min="-2" pref="327" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jbActualizar" min="-2" pref="30" max="-2" attributes="0"/>
+              <EmptySpace pref="238" max="32767" attributes="0"/>
+              <Component id="jpArticulo" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="48" max="-2" attributes="0"/>
                   <Component id="jpFamilia" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="354" max="32767" attributes="0"/>
+                  <EmptySpace pref="314" max="32767" attributes="0"/>
               </Group>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
+    <Component class="javax.swing.JButton" name="jbActualizar">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Actualizar"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbActualizarActionPerformed"/>
+      </Events>
+    </Component>
     <Container class="javax.swing.JPanel" name="jpFamilia">
       <Properties>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -83,52 +96,37 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Group type="102" alignment="0" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="jbCrearFamilia" min="-2" pref="120" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jbModificarFamilia" min="-2" pref="120" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jbBorrarFamilia" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jspFamilia" min="-2" pref="458" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jtfCodigoFamilia" alignment="0" max="32767" attributes="0"/>
-                      <Component id="jtfNombreFamilia" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" alignment="1" attributes="0">
-                          <EmptySpace min="0" pref="46" max="32767" attributes="0"/>
-                          <Component id="jbActualizar" min="-2" pref="110" max="-2" attributes="0"/>
-                      </Group>
-                      <Group type="102" attributes="0">
-                          <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabel2" min="-2" pref="110" max="-2" attributes="0"/>
-                              <Component id="jLabel1" min="-2" pref="110" max="-2" attributes="0"/>
-                          </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                      </Group>
+                      <Component id="jspFamilia" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="jbBorrarFamilia" min="-2" pref="120" max="-2" attributes="0"/>
+                      <Component id="jLabel1" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
+                      <Component id="jtfNombreFamilia" min="-2" pref="120" max="-2" attributes="0"/>
+                      <Component id="jLabel2" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
+                      <Component id="jtfCodigoFamilia" min="-2" pref="120" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="jbCrearFamilia" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                              <Component id="jbModificarFamilia" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                              <Component id="jbBorrarFamilia" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
-                      <Component id="jbActualizar" alignment="0" min="-2" pref="30" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="jbCrearFamilia" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="jbModificarFamilia" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
+                      <Component id="jbBorrarFamilia" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" alignment="1" attributes="0">
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                      <Group type="102" attributes="0">
                           <Component id="jLabel1" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfCodigoFamilia" min="-2" pref="30" max="-2" attributes="0"/>
@@ -137,9 +135,9 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfNombreFamilia" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jspFamilia" min="-2" pref="215" max="-2" attributes="0"/>
+                      <Component id="jspFamilia" pref="0" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -181,14 +179,6 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbBorrarFamiliaActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JButton" name="jbActualizar">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Actualizar"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jbActualizarActionPerformed"/>
           </Events>
         </Component>
         <Container class="javax.swing.JScrollPane" name="jspFamilia">
@@ -244,7 +234,6 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jspArticulo" alignment="0" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <Component id="jbCrearArticulo" min="-2" pref="120" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -252,22 +241,20 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jbBorrarArticulo" min="-2" pref="120" max="-2" attributes="0"/>
                       </Group>
-                  </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jtfFamiliaArticulo" alignment="0" pref="162" max="32767" attributes="0"/>
-                      <Component id="jtfNombreArticulo" alignment="0" max="32767" attributes="0"/>
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jspArticulo" min="-2" pref="233" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Component id="jLabel4" alignment="0" min="-2" pref="110" max="-2" attributes="0"/>
-                              <Component id="jLabel5" min="-2" pref="110" max="-2" attributes="0"/>
-                              <Component id="jLabel6" min="-2" pref="110" max="-2" attributes="0"/>
+                              <Component id="jLabel4" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="jtfCodigoArticulo" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="jLabel6" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="jcbFamilia" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="jtfNombreArticulo" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="jLabel5" min="-2" pref="120" max="-2" attributes="0"/>
                           </Group>
-                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="jtfCodigoArticulo" max="32767" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -280,8 +267,8 @@
                       <Component id="jbModificarArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                       <Component id="jbBorrarArticulo" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
+                  <EmptySpace pref="11" max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
                       <Group type="102" attributes="0">
                           <Component id="jLabel4" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -289,33 +276,41 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jLabel6" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="jtfFamiliaArticulo" min="-2" pref="30" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jcbFamilia" min="-2" pref="25" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                           <Component id="jLabel5" min="-2" pref="30" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jtfNombreArticulo" min="-2" pref="30" max="-2" attributes="0"/>
                       </Group>
-                      <Component id="jspArticulo" min="-2" pref="240" max="-2" attributes="0"/>
+                      <Component id="jspArticulo" min="-2" pref="204" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="jLabel6">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Familia"/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JTextField" name="jtfFamiliaArticulo">
-        </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
           <Properties>
             <Property name="text" type="java.lang.String" value="C&#xf3;digo"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="jtfCodigoArticulo">
+        </Component>
+        <Component class="javax.swing.JLabel" name="jLabel6">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Familia"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JComboBox" name="jcbFamilia">
+          <Properties>
+            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+              <StringArray count="0"/>
+            </Property>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel5">
           <Properties>

@@ -11,9 +11,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -28,11 +26,13 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "Clientes.findAll", query = "SELECT c FROM Clientes c")
     , @NamedQuery(name = "Clientes.findByCodcliente", query = "SELECT c FROM Clientes c WHERE c.codcliente = :codcliente")
-    , @NamedQuery(name = "Clientes.findByNomcliente", query = "SELECT c FROM Clientes c WHERE c.nomcliente = :nomcliente")})
+    , @NamedQuery(name = "Clientes.findByNomcliente", query = "SELECT c FROM Clientes c WHERE c.nomcliente = :nomcliente")
+    , @NamedQuery(name = "Clientes.findOrderByCodcliente", query = "SELECT c FROM Clientes c ORDER BY c.codcliente")//Creada por mí
+})
 public class Clientes implements Serializable {
 
     private static final long serialVersionUID = 1L;
- 
+
     @Id
     @Basic(optional = false)
     @Column(name = "CODCLIENTE")
@@ -42,7 +42,7 @@ public class Clientes implements Serializable {
     private String nomcliente;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codcliente")
     private Collection<Facturas> facturasCollection;
-    
+
     public Clientes() {
     }
 
@@ -103,5 +103,5 @@ public class Clientes implements Serializable {
     public String toString() {
         return this.getCodcliente();
     }
-    
+
 }

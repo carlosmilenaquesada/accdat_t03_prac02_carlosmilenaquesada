@@ -67,7 +67,7 @@ public class ArticulosJpaController implements Serializable {
             em.getTransaction().commit();
         } catch (Exception ex) {
             if (findArticulos(articulos.getCodarticulo()) != null) {
-                throw new PreexistingEntityException("Articulos " + articulos + " already exists.", ex);
+                throw new PreexistingEntityException("El artículo " + articulos + " ya existe.", ex);
             }
             throw ex;
         } finally {
@@ -125,7 +125,7 @@ public class ArticulosJpaController implements Serializable {
             if (msg == null || msg.length() == 0) {
                 String id = articulos.getCodarticulo();
                 if (findArticulos(id) == null) {
-                    throw new NonexistentEntityException("The articulos with id " + id + " no longer exists.");
+                    throw new NonexistentEntityException("El artículo con código " + id + " ya no existe.");
                 }
             }
             throw ex;
@@ -146,7 +146,7 @@ public class ArticulosJpaController implements Serializable {
                 articulos = em.getReference(Articulos.class, id);
                 articulos.getCodarticulo();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The articulos with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("El artículo con código " + id + " ya no existe.", enfe);
             }
             Familias codfamilia = articulos.getCodfamilia();
             if (codfamilia != null) {

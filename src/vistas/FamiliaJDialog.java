@@ -9,22 +9,18 @@ import controladores.Herramientas;
 import controladores.exceptions.IllegalOrphanException;
 import controladores.exceptions.NonexistentEntityException;
 import controladores.exceptions.PreexistingEntityException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import static controladores.GestorInformacion.panelBorradoFamilia;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import modelos.Articulos;
-import modelos.Facturas;
 import modelos.Familias;
 
 public class FamiliaJDialog extends javax.swing.JDialog {
@@ -39,6 +35,8 @@ public class FamiliaJDialog extends javax.swing.JDialog {
 
     private DefaultTableModel dtmArticulo;
     private JTextField[] inputsArticulo;
+
+    private DefaultComboBoxModel dcbmFamilias;
 
     public FamiliaJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -59,7 +57,8 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         this.jtArticulo.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.familiaEnFoco = null;
         this.inputsFamilia = new JTextField[]{jtfCodigoFamilia, jtfNombreFamilia};
-        this.inputsArticulo = new JTextField[]{jtfCodigoArticulo, jtfFamiliaArticulo, jtfNombreArticulo};
+        this.inputsArticulo = new JTextField[]{jtfCodigoArticulo, jtfNombreArticulo};
+        this.dcbmFamilias = (DefaultComboBoxModel) jcbFamilia.getModel();
         actualizarTablas();
         this.jtFamilia.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -90,34 +89,37 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private void actualizarInputsArticulos() {
         Articulos articulo = (Articulos) jtArticulo.getValueAt(jtArticulo.getSelectedRow(), 0);
         jtfCodigoArticulo.setText(articulo.getCodarticulo());
-        jtfFamiliaArticulo.setText(articulo.getCodfamilia().toString());
+        jcbFamilia.setSelectedItem(articulo.getCodfamilia());
         jtfNombreArticulo.setText(articulo.getNomarticulo());
     }
 
     private void actualizarTablas() {
         dtmFamilia.setRowCount(0);
-        this.listaFamilias = ctrlFamilias.findFamiliasEntities();
+        this.listaFamilias = ctrlFamilias.getEntityManager().createNamedQuery("Familias.findOrderByCodfamilia").getResultList();
         for (Familias f : this.listaFamilias) {
             dtmFamilia.addRow(new Object[]{f});
+            dcbmFamilias.addElement(f);
         }
         familiaEnFoco = null;
         jtfCodigoFamilia.setText("");
         jtfNombreFamilia.setText("");
+
         actualizarTablaArticulos();
     }
 
     private void actualizarTablaArticulos() {
         dtmArticulo.setRowCount(0);
+        jtfCodigoArticulo.setText("");
+        jcbFamilia.setSelectedItem(null);
+        jtfNombreArticulo.setText("");
         if (familiaEnFoco != null) {
             for (Articulos a : (Collection<Articulos>) familiaEnFoco.getArticulosCollection()) {
                 dtmArticulo.addRow(
                         new Object[]{a}
                 );
             }
+            jcbFamilia.setSelectedItem(familiaEnFoco);
         }
-        jtfCodigoArticulo.setText("");
-        jtfFamiliaArticulo.setText("");
-        jtfNombreArticulo.setText("");
 
     }
 
@@ -125,6 +127,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jbActualizar = new javax.swing.JButton();
         jpFamilia = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jtfCodigoFamilia = new javax.swing.JTextField();
@@ -133,14 +136,13 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jbCrearFamilia = new javax.swing.JButton();
         jbModificarFamilia = new javax.swing.JButton();
         jbBorrarFamilia = new javax.swing.JButton();
-        jbActualizar = new javax.swing.JButton();
         jspFamilia = new javax.swing.JScrollPane();
         jtFamilia = new javax.swing.JTable();
         jpArticulo = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        jtfFamiliaArticulo = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jtfCodigoArticulo = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        jcbFamilia = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         jtfNombreArticulo = new javax.swing.JTextField();
         jbCrearArticulo = new javax.swing.JButton();
@@ -151,9 +153,16 @@ public class FamiliaJDialog extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Gestión de familias");
-        setMaximumSize(new java.awt.Dimension(684, 664));
-        setMinimumSize(new java.awt.Dimension(684, 664));
+        setMaximumSize(new java.awt.Dimension(425, 582));
+        setMinimumSize(new java.awt.Dimension(425, 582));
         setResizable(false);
+
+        jbActualizar.setText("Actualizar");
+        jbActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbActualizarActionPerformed(evt);
+            }
+        });
 
         jpFamilia.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Familia", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
@@ -179,13 +188,6 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         jbBorrarFamilia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jbBorrarFamiliaActionPerformed(evt);
-            }
-        });
-
-        jbActualizar.setText("Actualizar");
-        jbActualizar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jbActualizarActionPerformed(evt);
             }
         });
 
@@ -220,38 +222,28 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                     .addGroup(jpFamiliaLayout.createSequentialGroup()
                         .addComponent(jbCrearFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbModificarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbBorrarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jspFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 458, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                        .addComponent(jbModificarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jspFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jtfCodigoFamilia)
-                    .addComponent(jtfNombreFamilia)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFamiliaLayout.createSequentialGroup()
-                        .addGap(0, 46, Short.MAX_VALUE)
-                        .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jpFamiliaLayout.createSequentialGroup()
-                        .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(jbBorrarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfNombreFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jtfCodigoFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jpFamiliaLayout.setVerticalGroup(
             jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpFamiliaLayout.createSequentialGroup()
-                .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jpFamiliaLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jbCrearFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbModificarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jbBorrarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap()
+                .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jbCrearFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbModificarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbBorrarFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpFamiliaLayout.createSequentialGroup()
+                .addGroup(jpFamiliaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jpFamiliaLayout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtfCodigoFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -259,15 +251,15 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtfNombreFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jspFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jspFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(10, 10, 10))
         );
 
         jpArticulo.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(), "Articulos de la familia", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 1, 14))); // NOI18N
 
-        jLabel6.setText("Familia");
-
         jLabel4.setText("Código");
+
+        jLabel6.setText("Familia");
 
         jLabel5.setText("Nombre");
 
@@ -320,25 +312,23 @@ public class FamiliaJDialog extends javax.swing.JDialog {
             .addGroup(jpArticuloLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jspArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jpArticuloLayout.createSequentialGroup()
                         .addComponent(jbCrearArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jbModificarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jbBorrarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(18, 18, 18)
-                .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jtfFamiliaArticulo, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
-                    .addComponent(jtfNombreArticulo)
+                        .addComponent(jbBorrarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jpArticuloLayout.createSequentialGroup()
+                        .addComponent(jspArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jtfCodigoArticulo))
-                .addContainerGap())
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jtfCodigoArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jcbFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jtfNombreArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(10, 10, 10))
         );
         jpArticuloLayout.setVerticalGroup(
             jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -348,8 +338,8 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                     .addComponent(jbCrearArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbModificarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jbBorrarArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addGroup(jpArticuloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jpArticuloLayout.createSequentialGroup()
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -357,13 +347,13 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtfFamiliaArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jtfNombreArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jspArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(59, 59, 59))
+                    .addComponent(jspArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(10, 10, 10))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -372,25 +362,29 @@ public class FamiliaJDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jpArticulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jpArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(jpFamilia, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
+                    .addComponent(jpFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(11, Short.MAX_VALUE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(320, 320, 320)
-                .addComponent(jpArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jbActualizar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 238, Short.MAX_VALUE)
+                .addComponent(jpArticulo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
+                    .addGap(48, 48, 48)
                     .addComponent(jpFamilia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(354, Short.MAX_VALUE)))
+                    .addContainerGap(314, Short.MAX_VALUE)))
         );
 
         pack();
@@ -432,7 +426,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         if (familia != null) {
             familia.setNomfamilia(jtfNombreFamilia.getText());
         } else {
-            errores.add(GestorErrores.mensajes[18]);
+            errores.add(GestorErrores.mensajes[2]);
         }
         //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
         if (errores.isEmpty()) {
@@ -514,9 +508,12 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         //Validación de los input
         ArrayList<String> errores = GestorErrores.validarInput(inputsArticulo, GestorErrores.mensajesInputsVaciosArticulos);
         //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+        if (jcbFamilia.getSelectedItem() == null) {
+            errores.add(GestorErrores.mensajes[10]);
+        }
         if (errores.isEmpty()) {
             //Obtenemos la referencia a la familia que se va a asociar con el artículo
-            Familias familia = ctrlFamilias.findFamilias(jtfFamiliaArticulo.getText());
+            Familias familia = ctrlFamilias.findFamilias(jcbFamilia.getSelectedItem().toString());
             if (familia != null) {
                 //Si el código de familia aportado por el usuario existe, se asociará al artículo, de lo contrario, se recoge  de error y no se creará el artículo
                 try {
@@ -531,8 +528,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
                     errores.add(ex.getMessage());
                 }
             } else {
-                errores.add(GestorErrores.mensajes[18]);
-                GestorErrores.cambiarABordeError(jtfFamiliaArticulo);
+                errores.add(GestorErrores.mensajes[2]);
             }
         }
 
@@ -548,21 +544,24 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private void jbModificarArticuloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbModificarArticuloActionPerformed
         //Validación de los input
         ArrayList<String> errores = GestorErrores.validarInput(inputsArticulo, GestorErrores.mensajesInputsVaciosArticulos);
+        if (jcbFamilia.getSelectedItem() == null) {
+            errores.add(GestorErrores.mensajes[10]);
+        }
         //Si no ocurrieron errores en la recopilación de datos, 'errores' estará vacío y puedo continuar
+
         if (errores.isEmpty()) {
             //Inicio la modificación del artículo trayendo de la base de datos el artículo que tiene el identificador aportado por el usuario
             Articulos articulo = ctrlArticulos.findArticulos(jtfCodigoArticulo.getText());
             //También traigo una la referencia a la nueva familia aprotada por el usuario, la cual se va a asociar con el artículo
-            Familias familia = ctrlFamilias.findFamilias(jtfFamiliaArticulo.getText());
+            Familias familia = ctrlFamilias.findFamilias(jcbFamilia.getSelectedItem().toString());
             //Si el artículo y la familia aportadas por el usuario existen, se continúa el proceso
             //Si el artículo no existe o la nueva familia aportada por el usuario no existe, se genera el código de error por cada elemento inexistente.
             if (articulo == null) {
-                errores.add(GestorErrores.mensajes[41]);
+                errores.add(GestorErrores.mensajes[4]);
                 GestorErrores.cambiarABordeError(jtfCodigoArticulo);
             }
             if (familia == null) {
-                errores.add(GestorErrores.mensajes[18]);
-                GestorErrores.cambiarABordeError(jtfFamiliaArticulo);
+                errores.add(GestorErrores.mensajes[2]);
             }
             if (errores.isEmpty()) {
                 try {
@@ -596,6 +595,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
         if (errores.isEmpty()) {
             //Si el artículo que se va a borrar está presente en alguna línea de factura, se preguntará al usuario si desea borrar el artículo y las líneas
             //de factura asociadas al artículo
+
             int opcion = JOptionPane.showOptionDialog(this, panelBorradoArticulo[0], panelBorradoArticulo[1],
                     JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null,
                     new Object[]{panelBorradoArticulo[2], panelBorradoArticulo[3], panelBorradoArticulo[4]}, panelBorradoArticulo[2]);
@@ -671,6 +671,7 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private javax.swing.JButton jbCrearFamilia;
     private javax.swing.JButton jbModificarArticulo;
     private javax.swing.JButton jbModificarFamilia;
+    private javax.swing.JComboBox<String> jcbFamilia;
     private javax.swing.JPanel jpArticulo;
     private javax.swing.JPanel jpFamilia;
     private javax.swing.JScrollPane jspArticulo;
@@ -679,7 +680,6 @@ public class FamiliaJDialog extends javax.swing.JDialog {
     private javax.swing.JTable jtFamilia;
     private javax.swing.JTextField jtfCodigoArticulo;
     private javax.swing.JTextField jtfCodigoFamilia;
-    private javax.swing.JTextField jtfFamiliaArticulo;
     private javax.swing.JTextField jtfNombreArticulo;
     private javax.swing.JTextField jtfNombreFamilia;
     // End of variables declaration//GEN-END:variables
